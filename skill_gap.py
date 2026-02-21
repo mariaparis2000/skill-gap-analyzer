@@ -7,8 +7,20 @@ st.set_page_config(page_title="Skill-gap analyzer", layout="wide")
 #Background:
 st.markdown("""
     <style>
+        /* Global background with a noticeable professional gradient */
         .stApp {
-            background-color: #f8faff;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+        }
+
+        /* Styling input containers for better contrast against the gradient */
+        .stTextInput, .stTextArea, .stFileUploader {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+        }
+
+        /* Unified sidebar styling */
+        [data-testid="stSidebar"] {
+            background-color: #e0e4e8 !important;
         }
     </style>
 """, unsafe_allow_html=True)

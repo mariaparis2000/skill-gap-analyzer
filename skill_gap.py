@@ -47,6 +47,18 @@ if c2.button("🚀 Start match analysis", use_container_width=True):
             progress_bar.progress(percent_complete + 1)
         
         st.success("Analysis complete!")
+       
+        hard_skills = ["Python", "SQL", "Excel", "Tableau", "Power BI", "Statistics", "Machine Learning"]
+        soft_skills = ["Leadership", "Communication", "Teamwork", "Agile", "Management"]
+        languages = ["English", "Spanish", "French", "German"]
+
+        cv_content = (cv_text if cv_text else "") + " " + (uploaded_cv.name if uploaded_cv else "")
+
+        found_cv = [s for s in hard_skills + soft_skills + languages if s.lower() in cv_content.lower()]
+        found_jd = [s for s in hard_skills + soft_skills + languages if s.lower() in job_desc.lower()]
+
     else:
         st.error("Missing data: Please provide both your profile and the job description.")
+
+    
 

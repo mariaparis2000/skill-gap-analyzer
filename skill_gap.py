@@ -52,7 +52,7 @@ if c2.button("🚀 Start match analysis", use_container_width=True):
         soft_skills = ["Leadership", "Communication", "Teamwork", "Agile", "Management"]
         languages = ["English", "Spanish", "French", "German"]
 
-        cv_content = (cv_text if cv_text else "") + " " + (uploaded_cv.name if uploaded_cv else "")
+        cv_content = uploaded_cv.name if uploaded_cv else ""
 
         found_cv = [s for s in hard_skills + soft_skills + languages if s.lower() in cv_content.lower()]
         found_jd = [s for s in hard_skills + soft_skills + languages if s.lower() in job_desc.lower()]

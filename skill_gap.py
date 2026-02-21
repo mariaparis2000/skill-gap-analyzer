@@ -46,3 +46,6 @@ if c2.button("🚀 Start match analysis", use_container_width=True):
         st.success("Analysis complete!")
     else:
         st.error("Missing data: Please provide both your profile and the job description.")
+
+#Browser tap customization:
+st.set_page_config(page_title="Skill-gap analyzer", layout="wide")

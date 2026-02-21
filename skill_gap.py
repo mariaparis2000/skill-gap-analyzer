@@ -19,8 +19,12 @@ st.sidebar.markdown("### How to use")
 st.sidebar.info("1. Upload your CV\n2. Paste the job description\n3. Click Analyze")
 
 #Title:
-st.title("Skill-gap analyzer")
-st.markdown("Compare your professional profile against market requirements in real-time.")
+st.markdown("""
+    <div style="background-color: #e3f2fd; padding: 30px; border-radius: 15px; border-left: 8px solid #1565c0; margin-bottom: 25px;">
+        <h1 style="color: #0d47a1; margin: 0; font-family: sans-serif;">🎯 Skill-Gap AI Analyzer</h1>
+        <p style="color: #1e88e5; font-size: 18px; margin-top: 10px;">Empowering your career path through data-driven insights.</p>
+    </div>
+""", unsafe_allow_html=True)
 st.divider()
 
 #Body:

@@ -60,22 +60,38 @@ if c2.button("🚀 Start match analysis", use_container_width=True):
         found_jd = [s for s in hard_skills + soft_skills + languages if s.lower() in job_desc.lower()]
 
         st.divider()
-        st.header("📊 Evaluation results")
+        st.header("📊 Detailed Skill Analysis")
 
-        m1, m2, m3 = st.columns(3)
-        m1.metric("Overall Match", "72%", "+3% vs average")
-        m2.metric("Skills Found", f"{len(found_cv)}")
-        m3.metric("Skills to Improve", f"{len(found_jd) - len(found_cv) if len(found_jd) > len(found_cv) else 0}")
+        # --- NEW SECTION: SIDE-BY-SIDE CHECKLIST ---
+        st.subheader("✅ Skills Checklist")
+        col_check1, col_check2 = st.columns(2)
 
-        st.subheader("Skill gap visualization")
+        with col_check1:
+            st.markdown("**Skills Found in your Profile:**")
+            for skill in found_cv:
+                # Usamos disabled=True porque es informativo, no para que el usuario clique
+                st.checkbox(skill, value=True, key=f"found_{skill}", disabled=True)
+
+        with col_check2:
+            st.markdown("**Skills Missing (Required by Job):**")
+            missing_skills = [s for s in found_jd if s not in found_cv]
+            if missing_skills:
+                for skill in missing_skills:
+                    st.checkbox(skill, value=False, key=f"missing_{skill}", disabled=True)
+            else:
+                st.success("You have all the required skills mentioned in the JD!")
+
+        st.divider()
+        st.subheader("📈 Proficiency Gap")
+        
         chart_data = {
             "Category": ["Hard Skills", "Soft Skills", "Languages"],
-            "Your profile": [len([s for s in found_cv if s in hard_skills]), 
-                             len([s for s in found_cv if s in soft_skills]), 
-                             len([s for s in found_cv if s in languages])],
-            "Your target job": [4, 3, 2]
+            "Current Profile": [len([s for s in found_cv if s in hard_skills]), 
+                                len([s for s in found_cv if s in soft_skills]), 
+                                len([s for s in found_cv if s in languages])],
+            "Job Requirements": [4, 3, 2] # Mock requirements for comparison
         }
-        st.bar_chart(data=chart_data, x="Category")
+        st.bar_chart(data=chart_data, x="Category", y=["Current Profile", "Job Requirements"], color=["#2e7d32", "#1565c0"])
 
     else:
         st.error("Missing data: Please provide both your profile and the job description.")

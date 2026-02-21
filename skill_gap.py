@@ -94,11 +94,11 @@ if c2.button("🚀 Start match analysis", use_container_width=True):
         st.bar_chart(
             data=chart_data, 
             x="Category", 
-            y=["Your Profile", "Job Requirements"], 
-            color=["#2e7d32", "#1565c0"], # Green for user, Blue for market
+            y=["Current Profile", "Job Requirements"], 
+            color=["#2e7d32", "#1565c0"], 
             stack=False
         )
-
+        
     else:
         st.error("Missing data: Please provide both your profile and the job description.")
 

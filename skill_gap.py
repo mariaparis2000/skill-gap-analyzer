@@ -4,6 +4,15 @@ import time
 #Browser tab customization:
 st.set_page_config(page_title="Skill-gap analyzer", layout="wide")
 
+#Background:
+st.markdown("""
+    <style>
+        .stApp {
+            background-color: #f8faff;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 #Sidebar:
 st.sidebar.title("Configuration")
 

@@ -28,6 +28,7 @@ col1, col2 = st.columns(2)
 
 col1.header("📂 Your profile")
 uploaded_cv = col1.file_uploader("Upload your CV (PDF)", type="pdf")
+cv_text = col1.text_area("Or paste your skills/experience here:", height=150)
 
 col2.header("💼 Your target job")
 job_title = col2.text_input("Job title:", placeholder="e.g., Senior Data Analyst")
@@ -52,7 +53,7 @@ if c2.button("🚀 Start match analysis", use_container_width=True):
         soft_skills = ["Leadership", "Communication", "Teamwork", "Agile", "Management"]
         languages = ["English", "Spanish", "French", "German"]
 
-        cv_content = uploaded_cv.name if uploaded_cv else ""
+        cv_content = (cv_text if cv_text else "") + " " + (uploaded_cv.name if uploaded_cv else "")
 
         found_cv = [s for s in hard_skills + soft_skills + languages if s.lower() in cv_content.lower()]
         found_jd = [s for s in hard_skills + soft_skills + languages if s.lower() in job_desc.lower()]

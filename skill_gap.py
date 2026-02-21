@@ -4,14 +4,6 @@ import time
 #Browser tab customization:
 st.set_page_config(page_title="Skill-gap analyzer", layout="wide")
 
-#Look & feel:
-st.markdown("""
-    <div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
-        <h1 style="color: #0e1117; margin-bottom: 0;">🎯 Skill-Gap AI Analyzer</h1>
-        <p style="color: #555e6d; font-size: 18px;">Empowering your career path through data-driven insights.</p>
-    </div>
-""", unsafe_allow_html=True)
-
 #Sidebar:
 st.sidebar.title("Configuration")
 
@@ -106,7 +98,7 @@ if c2.button("🚀 Start match analysis", use_container_width=True):
             color=["#2e7d32", "#1565c0"], 
             stack=False
         )
-
+        
     else:
         st.error("Missing data: Please provide both your profile and the job description.")
 

@@ -1,6 +1,9 @@
 import streamlit as st
 import time
 
+#Browser tab customization:
+st.set_page_config(page_title="Skill-gap analyzer", layout="wide")
+
 #Sidebar:
 st.sidebar.title("Configuration")
 
@@ -47,5 +50,3 @@ if c2.button("🚀 Start match analysis", use_container_width=True):
     else:
         st.error("Missing data: Please provide both your profile and the job description.")
 
-#Browser tap customization:
-st.set_page_config(page_title="Skill-gap analyzer", layout="wide")

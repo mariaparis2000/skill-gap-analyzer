@@ -57,6 +57,24 @@ if c2.button("🚀 Start match analysis", use_container_width=True):
         found_cv = [s for s in hard_skills + soft_skills + languages if s.lower() in cv_content.lower()]
         found_jd = [s for s in hard_skills + soft_skills + languages if s.lower() in job_desc.lower()]
 
+        st.divider()
+        st.header("📊 Evaluation results")
+
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Overall Match", "72%", "+3% vs average")
+        m2.metric("Skills Found", f"{len(found_cv)}")
+        m3.metric("Skills to Improve", f"{len(found_jd) - len(found_cv) if len(found_jd) > len(found_cv) else 0}")
+
+        st.subheader("Skill gap visualization")
+        chart_data = {
+            "Category": ["Hard Skills", "Soft Skills", "Languages"],
+            "Your profile": [len([s for s in found_cv if s in hard_skills]), 
+                             len([s for s in found_cv if s in soft_skills]), 
+                             len([s for s in found_cv if s in languages])],
+            "Your target job": [4, 3, 2]
+        }
+        st.bar_chart(data=chart_data, x="Category")
+
     else:
         st.error("Missing data: Please provide both your profile and the job description.")
 

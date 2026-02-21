@@ -91,7 +91,13 @@ if c2.button("🚀 Start match analysis", use_container_width=True):
                                 len([s for s in found_cv if s in languages])],
             "Job Requirements": [4, 3, 2] # Mock requirements for comparison
         }
-        st.bar_chart(data=chart_data, x="Category", y=["Current Profile", "Job Requirements"], color=["#2e7d32", "#1565c0"])
+        st.bar_chart(
+            data=chart_data, 
+            x="Category", 
+            y=["Your Profile", "Job Requirements"], 
+            color=["#2e7d32", "#1565c0"], # Green for user, Blue for market
+            stack=False
+        )
 
     else:
         st.error("Missing data: Please provide both your profile and the job description.")

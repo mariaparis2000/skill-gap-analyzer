@@ -39,7 +39,7 @@ st.divider()
 c1, c2, c3 = st.columns([1, 1, 1])
 
 if c2.button("🚀 Start match analysis", use_container_width=True):
-    if (uploaded_cv) and job_desc:
+    if (uploaded_cv or cv_text) and job_desc:
         progress_bar = st.progress(0)
         st.info("Analyzing compatibility and identifying skill gaps...")
         
@@ -53,7 +53,8 @@ if c2.button("🚀 Start match analysis", use_container_width=True):
         soft_skills = ["Leadership", "Communication", "Teamwork", "Agile", "Management"]
         languages = ["English", "Spanish", "French", "German"]
 
-        cv_content = (cv_text if cv_text else "") + " " + (uploaded_cv.name if uploaded_cv else "")
+        file_name = uploaded_cv.name if uploaded_cv else ""
+        cv_content = cv_text + " " + file_name
 
         found_cv = [s for s in hard_skills + soft_skills + languages if s.lower() in cv_content.lower()]
         found_jd = [s for s in hard_skills + soft_skills + languages if s.lower() in job_desc.lower()]

@@ -7,6 +7,7 @@ st.set_page_config(page_title="Skill-gap analyzer", layout="wide")
 #Background:
 st.markdown("""
     <style>
+        /* 1. GLOBAL & CONTAINERS */
         .stApp {
             background-color: #f2ede4;
         }
@@ -22,7 +23,7 @@ st.markdown("""
             border: 1px solid #ffffff; margin-bottom: 20px;
         }
 
-        /* RESET TOTAL DE TEXTOS DEL SLIDER - NEGRO Y SIN FONDOS */
+        /* 2. SLIDER CLEANUP (NO BACKGROUNDS, NO UNDERLINES, PURE BLACK TEXT) */
         div[data-baseweb="slider"] span, 
         div[data-baseweb="slider"] div,
         div[data-testid="stTickBarItem"],
@@ -36,19 +37,22 @@ st.markdown("""
             -webkit-text-fill-color: #000000 !important;
         }
 
-        /* LÍNEA DEL SLIDER - IZQUIERDA VERDE OSCURO, DERECHA NEGRA */
+        /* 3. SLIDER LINE COLORS */
+        /* Left part (Progress): DARK GREEN */
         div[data-baseweb="slider"] > div > div > div:first-child {
             background-color: #2e4d3d !important;
         }
+        /* Right part (Remaining): BLACK */
         div[data-baseweb="slider"] > div > div {
             background-color: #000000 !important;
         }
+        /* Knob (Circle): DARK GREEN */
         div[data-baseweb="slider"] > div > div > div > div {
             background-color: #2e4d3d !important;
             border: none !important;
         }
 
-        /* BOTÓN PRINCIPAL VERDE OSCURO */
+        /* 4. MAIN BUTTON & SIDEBAR */
         .stButton>button {
             background-color: #2e4d3d !important;
             color: white !important;
@@ -56,7 +60,11 @@ st.markdown("""
             font-weight: bold; width: 100%;
         }
 
-        /* CHECKLIST - TICS VERDES Y TEXTO NEGRO */
+        [data-testid="stSidebar"] {
+            background-color: #f2ede4 !important;
+        }
+
+        /* 5. CHECKLIST STYLING */
         div[data-testid="stCheckbox"] span[role="checkbox"][aria-checked="true"] {
             background-color: #39e393 !important;
             border-color: #39e393 !important;

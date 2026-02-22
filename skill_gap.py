@@ -397,7 +397,7 @@ These are the key areas where the job requirements go beyond your current profil
 
         st.markdown(f"""
         <div class="ai-coach-box">
-            {coach_text}
+            {coach_text.strip()}
         </div>
         """, unsafe_allow_html=True)
 

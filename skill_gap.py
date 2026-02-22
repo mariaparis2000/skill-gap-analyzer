@@ -1,131 +1,166 @@
 import streamlit as st
 import time
 
-#Browser tab customization:
+#Browser tab:
 st.set_page_config(page_title="Skill-gap analyzer", layout="wide")
 
 #Background:
 st.markdown("""
     <style>
-        /* Global background with a noticeable professional gradient */
         .stApp {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+            background-color: #f2ede4;
         }
 
-        /* Styling input containers for better contrast against the gradient */
-        .stTextInput, .stTextArea, .stFileUploader {
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 10px;
+        .main-header {
+            background: linear-gradient(135deg, #fcebdb 0%, #f7d7be 100%);
+            padding: 40px;
+            border-radius: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
-        /* Unified sidebar styling */
-        [data-testid="stSidebar"] {
-            background-color: #e0e4e8 !important;
+        [data-testid="stVerticalBlock"] > div:has(div[data-testid="stVerticalBlock"]) {
+            background-color: #faf8f5;
+            padding: 25px;
+            border-radius: 30px 30px 80px 30px;
+            box-shadow: 5px 5px 20px rgba(0,0,0,0.02);
+            border: 1px solid #ffffff;
+            margin-bottom: 20px;
+        }
+
+        .stButton>button {
+            background-color: #e68a4d;
+            color: white;
+            border-radius: 20px;
+            border: none;
+            padding: 10px 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .stButton>button:hover {
+            background-color: #d3753b;
+            transform: scale(1.02);
+        }
+
+        .stTextInput>div>div>input, .stTextArea>div>div>textarea {
+            border-radius: 15px;
+            border: 1px solid #e0d9ce;
+            background-color: #ffffff;
         }
     </style>
 """, unsafe_allow_html=True)
 
 #Sidebar:
 st.sidebar.title("Configuration")
-
 analysis_depth = st.sidebar.select_slider(
     "In-depth analysis:",
     options=["Fast", "Standard", "Detailed"],
     value="Standard"
 )
-
-st.sidebar.write(f"Mode selected: {analysis_depth}")
 st.sidebar.divider()
 st.sidebar.markdown("### How to use")
 st.sidebar.info("1. Upload your CV\n2. Paste the job description\n3. Click Analyze")
 
-#Title:
+#Header:
 st.markdown("""
-    <div style="background-color: #e3f2fd; padding: 30px; border-radius: 15px; border-left: 8px solid #1565c0; margin-bottom: 25px;">
-        <h1 style="color: #0d47a1; margin: 0; font-family: sans-serif;">🎯 Skill-Gap AI Analyzer</h1>
-        <p style="color: #1e88e5; font-size: 18px; margin-top: 10px;">Empowering your career path through data-driven insights.</p>
+    <div class="main-header">
+        <h1 style="color: #2d2d2d; font-size: 45px; margin-bottom: 0;">Skill-Gap Analyzer</h1>
+        <p style="color: #6d6d6d; font-size: 18px;">AI-powered professional benchmarking & career roadmap.</p>
     </div>
 """, unsafe_allow_html=True)
-st.divider()
 
 #Body:
 col1, col2 = st.columns(2)
 
-col1.header("📂 Your profile")
-uploaded_cv = col1.file_uploader("Upload your CV (PDF)", type="pdf")
-cv_text = col1.text_area("Or paste your skills/experience here:", height=150)
+with col1:
+    with st.container():
+        st.markdown("### 📝 Your Profile")
+        uploaded_cv = st.file_uploader("Upload CV (PDF)", type="pdf", key="cv_uploader")
+        cv_text = st.text_area("Or paste skills/summary:", height=150, placeholder="E.g., Python, SQL, Project Management...", key="cv_text_area")
 
-col2.header("💼 Your target job")
-job_title = col2.text_input("Job title:", placeholder="e.g., Senior Data Analyst")
-job_desc = col2.text_area("Paste the job requirements here:", height=200)
+with col2:
+    with st.container():
+        st.markdown("### 💼 Target Job")
+        job_title = st.text_input("Job Title", placeholder="e.g. Data Scientist")
+        job_desc = st.text_area("Job Requirements:", height=150, placeholder="Paste the job description here...", key="jd_text_area")
 
-st.divider()
+st.markdown("<br>", unsafe_allow_html=True)
 
-c1, c2, c3 = st.columns([1, 1, 1])
-
-if c2.button("🚀 Start match analysis", use_container_width=True):
+if st.button("🚀 Start Match Analysis", use_container_width=True):
     if (uploaded_cv or cv_text) and job_desc:
         progress_bar = st.progress(0)
-        st.info("Analyzing compatibility and identifying skill gaps...")
+        status_text = st.empty()
+        status_text.info("Analyzing compatibility and identifying skill gaps...")
         
         for percent_complete in range(100):
             time.sleep(0.01)
             progress_bar.progress(percent_complete + 1)
         
-        st.success("Analysis complete!")
-       
-        hard_skills = ["Python", "SQL", "Excel", "Tableau", "Power BI", "Statistics", "Machine Learning"]
-        soft_skills = ["Leadership", "Communication", "Teamwork", "Agile", "Management"]
-        languages = ["English", "Spanish", "French", "German"]
+        status_text.success("Analysis complete!")
+        
+        hard_skills = ["Python", "SQL", "Excel", "Tableau", "Power BI", "Statistics", "Machine Learning", "R", "Git"]
+        soft_skills = ["Leadership", "Communication", "Teamwork", "Agile", "Management", "Problem Solving"]
+        languages = ["English", "Spanish", "French", "German", "Italian"]
 
+        # Logic to find matches
         file_name = uploaded_cv.name if uploaded_cv else ""
-        cv_content = cv_text + " " + file_name
+        cv_content = (cv_text if cv_text else "") + " " + file_name
 
         found_cv = [s for s in hard_skills + soft_skills + languages if s.lower() in cv_content.lower()]
         found_jd = [s for s in hard_skills + soft_skills + languages if s.lower() in job_desc.lower()]
+        missing_skills = [s for s in found_jd if s not in found_cv]
 
+        # 7. Results Section
         st.divider()
         st.header("📊 Detailed Skill Analysis")
 
-        # --- NEW SECTION: SIDE-BY-SIDE CHECKLIST ---
+        # Checklist
         st.subheader("✅ Skills Checklist")
-        col_check1, col_check2 = st.columns(2)
+        check_col1, check_col2 = st.columns(2)
 
-        with col_check1:
+        with check_col1:
             st.markdown("**Skills Found in your Profile:**")
-            for skill in found_cv:
-                # Usamos disabled=True porque es informativo, no para que el usuario clique
-                st.checkbox(skill, value=True, key=f"found_{skill}", disabled=True)
+            if found_cv:
+                for skill in found_cv:
+                    st.checkbox(skill, value=True, key=f"found_{skill}", disabled=True)
+            else:
+                st.warning("No matching skills found.")
 
-        with col_check2:
+        with check_col2:
             st.markdown("**Skills Missing (Required by Job):**")
-            missing_skills = [s for s in found_jd if s not in found_cv]
             if missing_skills:
                 for skill in missing_skills:
                     st.checkbox(skill, value=False, key=f"missing_{skill}", disabled=True)
             else:
                 st.success("You have all the required skills mentioned in the JD!")
 
+        # Chart
         st.divider()
         st.subheader("📈 Proficiency Gap")
         
         chart_data = {
             "Category": ["Hard Skills", "Soft Skills", "Languages"],
-            "Current Profile": [len([s for s in found_cv if s in hard_skills]), 
-                                len([s for s in found_cv if s in soft_skills]), 
-                                len([s for s in found_cv if s in languages])],
-            "Job Requirements": [4, 3, 2] # Mock requirements for comparison
+            "Current Profile": [
+                len([s for s in found_cv if s in hard_skills]), 
+                len([s for s in found_cv if s in soft_skills]), 
+                len([s for s in found_cv if s in languages])
+            ],
+            "Job Requirements": [
+                len([s for s in found_jd if s in hard_skills]), 
+                len([s for s in found_jd if s in soft_skills]), 
+                len([s for s in found_jd if s in languages])
+            ]
         }
+        
         st.bar_chart(
             data=chart_data, 
             x="Category", 
             y=["Current Profile", "Job Requirements"], 
-            color=["#2e7d32", "#1565c0"], 
+            color=["#e68a4d", "#2d2d2d"], # Matched to our Burnt Orange and Dark Grey theme
             stack=False
         )
         
     else:
-        st.error("Missing data: Please provide both your profile and the job description.")
-
-    
-
+        st.error("Missing data: Please provide both your profile (PDF or Text) and the job description.")

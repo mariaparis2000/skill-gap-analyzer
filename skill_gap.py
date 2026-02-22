@@ -212,19 +212,20 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             if pct >= 40: return "#c9723a"
             return "#c0392b"
 
-        def donut_svg(pct, label, size=160):
+        # Gráfico total destacado + 3 categorías:
+        def donut_html(pct, label, size=160):
             r = 54
             circ = 2 * 3.14159 * r
-            fill = (pct / 100) * circ
-            gap  = circ - fill
+            fill = round((pct / 100) * circ, 1)
+            gap  = round(circ - fill, 1)
             col  = color_for(pct)
-            return f"""
-            <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            offset = round(circ / 4, 1)
+            return f"""<div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
                 <svg width="{size}" height="{size}" viewBox="0 0 120 120">
                     <circle cx="60" cy="60" r="{r}" fill="none" stroke="#e8ddd0" stroke-width="10"/>
                     <circle cx="60" cy="60" r="{r}" fill="none" stroke="{col}" stroke-width="10"
-                        stroke-dasharray="{fill:.1f} {gap:.1f}"
-                        stroke-dashoffset="{circ/4:.1f}"
+                        stroke-dasharray="{fill} {gap}"
+                        stroke-dashoffset="{offset}"
                         stroke-linecap="round"/>
                     <text x="60" y="55" text-anchor="middle" font-size="22" font-weight="bold" fill="#2d2d2d">{pct}%</text>
                     <text x="60" y="73" text-anchor="middle" font-size="9" fill="#6d6d6d">match</text>
@@ -232,26 +233,37 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
                 <span style="font-size:14px;font-weight:600;color:#2d2d2d;">{label}</span>
             </div>"""
 
-        # Gráfico total destacado + 3 categorías:
+        circ_total = 2 * 3.14159 * 54
+        fill_total = round((pct_total / 100) * circ_total, 1)
+        gap_total  = round(circ_total - fill_total, 1)
+        offset_total = round(circ_total / 4, 1)
+        col_total  = color_for(pct_total)
+
+        overall_html = f"""<div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <svg width="200" height="200" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="54" fill="none" stroke="#e8ddd0" stroke-width="11"/>
+                <circle cx="60" cy="60" r="54" fill="none" stroke="{col_total}" stroke-width="11"
+                    stroke-dasharray="{fill_total} {gap_total}"
+                    stroke-dashoffset="{offset_total}"
+                    stroke-linecap="round"/>
+                <text x="60" y="53" text-anchor="middle" font-size="26" font-weight="bold" fill="#2d2d2d">{pct_total}%</text>
+                <text x="60" y="71" text-anchor="middle" font-size="8.5" fill="#6d6d6d">overall match</text>
+            </svg>
+            <span style="font-size:16px;font-weight:700;color:#2d2d2d;">Overall Match</span>
+        </div>"""
+
+        hard_html = donut_html(pct_hard, "Hard Skills")
+        soft_html = donut_html(pct_soft, "Soft Skills")
+        lang_html = donut_html(pct_lang, "Languages")
+
         st.markdown(f"""
         <div style="background:#faf8f5;border-radius:24px;padding:32px 24px;border:1px solid #ffffff;margin-bottom:24px;">
             <div style="display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:24px;">
-                <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-                    <svg width="200" height="200" viewBox="0 0 120 120">
-                        <circle cx="60" cy="60" r="54" fill="none" stroke="#e8ddd0" stroke-width="11"/>
-                        <circle cx="60" cy="60" r="54" fill="none" stroke="{color_for(pct_total)}" stroke-width="11"
-                            stroke-dasharray="{(pct_total/100)*339.3:.1f} {339.3-(pct_total/100)*339.3:.1f}"
-                            stroke-dashoffset="84.8"
-                            stroke-linecap="round"/>
-                        <text x="60" y="53" text-anchor="middle" font-size="26" font-weight="bold" fill="#2d2d2d">{pct_total}%</text>
-                        <text x="60" y="71" text-anchor="middle" font-size="8.5" fill="#6d6d6d">overall match</text>
-                    </svg>
-                    <span style="font-size:16px;font-weight:700;color:#2d2d2d;">Overall Match</span>
-                </div>
+                {overall_html}
                 <div style="width:1px;height:140px;background:#e8ddd0;"></div>
-                {donut_svg(pct_hard, "Hard Skills")}
-                {donut_svg(pct_soft, "Soft Skills")}
-                {donut_svg(pct_lang, "Languages")}
+                {hard_html}
+                {soft_html}
+                {lang_html}
             </div>
         </div>
         """, unsafe_allow_html=True)

@@ -208,25 +208,11 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
         }
 
         # Llamada a Gemini para extraer skills semánticamente:
-        skill_prompt = f"""
-You are a professional career analyst. Given a candidate profile and a job description, extract and compare skills semantically (not just exact keyword matching).
+        skill_prompt = f"""Extract skills from CV and job description. Return ONLY this JSON, no extra text:
+{{"hard_skills_cv":[],"soft_skills_cv":[],"languages_cv":[],"hard_skills_jd":[],"soft_skills_jd":[],"languages_jd":[]}}
 
-CANDIDATE PROFILE:
-{cv_content}
-
-JOB DESCRIPTION:
-{job_desc}
-
-Return ONLY a JSON object with this exact structure, no extra text:
-{{
-  "hard_skills_cv": ["skill1", "skill2"],
-  "soft_skills_cv": ["skill1", "skill2"],
-  "languages_cv": ["lang1", "lang2"],
-  "hard_skills_jd": ["skill1", "skill2"],
-  "soft_skills_jd": ["skill1", "skill2"],
-  "languages_jd": ["lang1", "lang2"]
-}}
-"""
+CV: {cv_content[:800]}
+JOB: {job_desc[:800]}"""
         skill_response = client.models.generate_content(
             model="gemini-2.0-flash-lite",
             contents=skill_prompt
@@ -368,29 +354,17 @@ Return ONLY a JSON object with this exact structure, no extra text:
         st.divider()
         st.subheader("🤖 AI Career Coach")
         with st.spinner("Generating your personalized career advice..."):
-            coach_prompt = f"""
-You are an expert career coach. A candidate has completed a skill-gap analysis for a job application.
-
-CANDIDATE PROFILE:
-{cv_content}
-
-TARGET JOB:
-{job_desc}
-
-ANALYSIS RESULTS:
-- Overall match: {pct_total}%
-- Hard Skills match: {pct_hard}% — Found: {found_cv_hard} — Missing: {[s for s in found_jd_hard if s not in found_cv_hard]}
-- Soft Skills match: {pct_soft}% — Found: {found_cv_soft} — Missing: {[s for s in found_jd_soft if s not in found_cv_soft]}
-- Languages match: {pct_lang}% — Found: {found_cv_lang} — Missing: {[s for s in found_jd_lang if s not in found_cv_lang]}
-
+            missing_hard = [s for s in found_jd_hard if s not in found_cv_hard]
+            missing_soft = [s for s in found_jd_soft if s not in found_cv_soft]
+            missing_lang = [s for s in found_jd_lang if s not in found_cv_lang]
+            coach_prompt = f"""Career coach. Skill gap analysis results:
+Match: {pct_total}% overall, {pct_hard}% hard skills, {pct_soft}% soft skills, {pct_lang}% languages.
+Strong skills: {found_cv_hard + found_cv_soft}
+Missing: {missing_hard + missing_soft + missing_lang}
+CV summary: {cv_content[:400]}
+Job: {job_desc[:400]}
 {depth_instructions[analysis_depth]}
-
-Write your response in English, directly addressing the candidate as "you". Be encouraging but honest.
-Structure your response with these sections using emoji headers:
-💪 Your Strengths
-🎯 Priority Gaps to Close
-📚 Recommended Next Steps
-"""
+Reply in English to the candidate. Use emoji headers: 💪 Your Strengths / 🎯 Priority Gaps / 📚 Next Steps"""
             coach_response = client.models.generate_content(
                 model="gemini-2.0-flash-lite",
                 contents=coach_prompt

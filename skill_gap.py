@@ -7,40 +7,64 @@ st.set_page_config(page_title="Skill-gap analyzer", layout="wide")
 #Background:
 st.markdown("""
     <style>
-        /* 1. ELIMINAR FONDOS Y SUBRAYADOS DE LOS TEXTOS (Fast, Standard, Detailed) */
-        /* Forzamos que el fondo sea transparente y el color de letra NEGRO PURO */
-        div[data-baseweb="slider"] + div > div, 
-        div[data-testid="stTickBarItem"] {
+        .stApp {
+            background-color: #f2ede4;
+        }
+
+        .main-header {
+            background: linear-gradient(135deg, #fcebdb 0%, #f7d7be 100%);
+            padding: 40px; border-radius: 40px; text-align: center; margin-bottom: 30px;
+        }
+
+        [data-testid="stVerticalBlock"] > div:has(div[data-testid="stVerticalBlock"]) {
+            background-color: #faf8f5;
+            padding: 25px; border-radius: 30px 30px 80px 30px;
+            border: 1px solid #ffffff; margin-bottom: 20px;
+        }
+
+        /* RESET TOTAL DE TEXTOS DEL SLIDER - NEGRO Y SIN FONDOS */
+        div[data-baseweb="slider"] span, 
+        div[data-baseweb="slider"] div,
+        div[data-testid="stTickBarItem"],
+        [data-testid="stTickBar"] div {
             background-color: transparent !important;
+            background: none !important;
             color: #000000 !important;
             text-decoration: none !important;
             border: none !important;
+            box-shadow: none !important;
+            -webkit-text-fill-color: #000000 !important;
         }
 
-        /* 2. LA LÍNEA DEL SLIDER */
-        /* Parte que era naranja -> Ahora VERDE OSCURO */
+        /* LÍNEA DEL SLIDER - IZQUIERDA VERDE OSCURO, DERECHA NEGRA */
         div[data-baseweb="slider"] > div > div > div:first-child {
             background-color: #2e4d3d !important;
         }
-        /* Parte que era verde -> Ahora NEGRA */
         div[data-baseweb="slider"] > div > div {
             background-color: #000000 !important;
         }
-        /* El círculo (tirador) -> VERDE OSCURO */
         div[data-baseweb="slider"] > div > div > div > div {
             background-color: #2e4d3d !important;
+            border: none !important;
         }
 
-        /* 3. TEXTO "STANDARD" (El valor seleccionado arriba del círculo) */
-        /* Negro, sin fondo y sin subrayado */
-        div[data-baseweb="slider"] div {
-            color: #000000 !important;
-            text-decoration: none !important;
+        /* BOTÓN PRINCIPAL VERDE OSCURO */
+        .stButton>button {
+            background-color: #2e4d3d !important;
+            color: white !important;
+            border-radius: 20px; border: none; padding: 10px 25px;
+            font-weight: bold; width: 100%;
         }
 
-        /* Asegurar que nada herede el color naranja antiguo */
-        .stSlider p {
-            color: #000000 !important;
+        /* CHECKLIST - TICS VERDES Y TEXTO NEGRO */
+        div[data-testid="stCheckbox"] span[role="checkbox"][aria-checked="true"] {
+            background-color: #39e393 !important;
+            border-color: #39e393 !important;
+        }
+        .stCheckbox div[data-testid="stWidgetLabel"] p {
+            color: #1a1a1a !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -126,8 +150,8 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
                     st.checkbox(skill, value=False, key=f"missing_{skill}", disabled=True)
             else:
                 st.markdown(f"""
-                    <div style="background-color: #39e393; color: white; padding: 10px; border-radius: 10px; text-align: center; font-weight: bold;">
-                    🌟 Analysis Complete! Discover your professional roadmap below.
+                    <div style="background-color: #2e4d3d; color: white; padding: 10px; border-radius: 10px; text-align: center; font-weight: bold;">
+                    🌟 Analysis Complete! You have all the required skills.
                     </div>
                 """, unsafe_allow_html=True)
 

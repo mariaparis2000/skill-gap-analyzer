@@ -7,37 +7,40 @@ st.set_page_config(page_title="Skill-gap analyzer", layout="wide")
 #Background:
 st.markdown("""
     <style>
-        /* 1. SLIDER LINE - All in Forest Green */
-        /* This targets both the progress and the remaining track */
-        div[data-baseweb="slider"] > div > div, 
+        /* 1. ELIMINAR FONDOS Y SUBRAYADOS DE LOS TEXTOS (Fast, Standard, Detailed) */
+        /* Forzamos que el fondo sea transparente y el color de letra NEGRO PURO */
+        div[data-baseweb="slider"] + div > div, 
+        div[data-testid="stTickBarItem"] {
+            background-color: transparent !important;
+            color: #000000 !important;
+            text-decoration: none !important;
+            border: none !important;
+        }
+
+        /* 2. LA LÍNEA DEL SLIDER */
+        /* Parte que era naranja -> Ahora VERDE OSCURO */
         div[data-baseweb="slider"] > div > div > div:first-child {
             background-color: #2e4d3d !important;
         }
-
-        /* 2. SLIDER HANDLE (The circle) - Forest Green */
+        /* Parte que era verde -> Ahora NEGRA */
+        div[data-baseweb="slider"] > div > div {
+            background-color: #000000 !important;
+        }
+        /* El círculo (tirador) -> VERDE OSCURO */
         div[data-baseweb="slider"] > div > div > div > div {
             background-color: #2e4d3d !important;
         }
 
-        /* 3. TEXT LABELS (Fast, Standard, Detailed) */
-        /* Black text, no background, no underline */
-        div[data-baseweb="slider"] + div > div {
-            background-color: transparent !important; /* No background box */
-            color: #000000 !important; /* Pure Black */
-            text-decoration: none !important; /* No underline */
-            font-weight: 500 !important;
-        }
-
-        /* 4. SIDEBAR HEADERS & INFO */
-        [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p, [data-testid="stSidebar"] span {
+        /* 3. TEXTO "STANDARD" (El valor seleccionado arriba del círculo) */
+        /* Negro, sin fondo y sin subrayado */
+        div[data-baseweb="slider"] div {
             color: #000000 !important;
+            text-decoration: none !important;
         }
 
-        /* 5. MAIN BUTTON - Keeping the Forest Green for consistency */
-        .stButton>button {
-            background-color: #2e4d3d !important;
-            color: #ffffff !important;
-            border-radius: 20px;
+        /* Asegurar que nada herede el color naranja antiguo */
+        .stSlider p {
+            color: #000000 !important;
         }
     </style>
 """, unsafe_allow_html=True)

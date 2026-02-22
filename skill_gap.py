@@ -207,29 +207,36 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             "Detailed": "Give an in-depth analysis with specific examples, priorities, and a step-by-step action plan."
         }
 
-        # Llamada a Gemini para extraer skills semánticamente:
-        skill_prompt = f"""Extract skills from CV and job description. Return ONLY this JSON, no extra text:
-{{"hard_skills_cv":[],"soft_skills_cv":[],"languages_cv":[],"hard_skills_jd":[],"soft_skills_jd":[],"languages_jd":[]}}
+        # Skill dictionaries - extended for robust matching:
+        hard_skills = [
+            "Python", "SQL", "Excel", "Tableau", "Power BI", "Statistics", "Machine Learning",
+            "R", "Git", "TensorFlow", "PyTorch", "Scikit-learn", "Pandas", "NumPy", "Matplotlib",
+            "Deep Learning", "NLP", "Computer Vision", "Data Visualization", "Big Data", "Spark",
+            "Hadoop", "AWS", "Azure", "GCP", "Docker", "Kubernetes", "Java", "JavaScript",
+            "TypeScript", "React", "Node.js", "HTML", "CSS", "MongoDB", "PostgreSQL", "MySQL",
+            "Airflow", "dbt", "Looker", "Snowflake", "Databricks", "Kafka", "API", "REST",
+            "A/B Testing", "Forecasting", "Regression", "Classification", "Clustering", "Excel VBA",
+            "SPSS", "SAS", "Matlab", "Scala", "ETL", "Data Engineering", "MLOps", "CI/CD"
+        ]
+        soft_skills = [
+            "Leadership", "Communication", "Teamwork", "Agile", "Management", "Problem Solving",
+            "Critical Thinking", "Creativity", "Collaboration", "Adaptability", "Time Management",
+            "Project Management", "Scrum", "Kanban", "Stakeholder Management", "Presentation",
+            "Negotiation", "Mentoring", "Strategic Thinking", "Decision Making", "Analytical Thinking",
+            "Attention to Detail", "Customer Focus", "Innovation", "Conflict Resolution"
+        ]
+        languages = [
+            "English", "Spanish", "French", "German", "Italian", "Portuguese", "Chinese",
+            "Mandarin", "Japanese", "Arabic", "Dutch", "Russian", "Korean", "Swedish", "Catalan"
+        ]
 
-CV: {cv_content[:800]}
-JOB: {job_desc[:800]}"""
-        skill_response = client.models.generate_content(
-            model="gemini-2.0-flash-lite",
-            contents=skill_prompt
-        )
-
-        # Parsear la respuesta JSON de Gemini:
-        import json, re
-        raw = skill_response.text.strip()
-        raw = re.sub(r"```json|```", "", raw).strip()
-        skills_data = json.loads(raw)
-
-        found_cv_hard = skills_data.get("hard_skills_cv", [])
-        found_cv_soft = skills_data.get("soft_skills_cv", [])
-        found_cv_lang = skills_data.get("languages_cv", [])
-        found_jd_hard = skills_data.get("hard_skills_jd", [])
-        found_jd_soft = skills_data.get("soft_skills_jd", [])
-        found_jd_lang = skills_data.get("languages_jd", [])
+        # Keyword matching across dictionaries:
+        found_cv_hard = [s for s in hard_skills if s.lower() in cv_content.lower()]
+        found_cv_soft = [s for s in soft_skills if s.lower() in cv_content.lower()]
+        found_cv_lang = [s for s in languages  if s.lower() in cv_content.lower()]
+        found_jd_hard = [s for s in hard_skills if s.lower() in job_desc.lower()]
+        found_jd_soft = [s for s in soft_skills if s.lower() in job_desc.lower()]
+        found_jd_lang = [s for s in languages  if s.lower() in job_desc.lower()]
 
         found_cv = found_cv_hard + found_cv_soft + found_cv_lang
         found_jd = found_jd_hard + found_jd_soft + found_jd_lang

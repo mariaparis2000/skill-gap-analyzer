@@ -7,47 +7,42 @@ st.set_page_config(page_title="Skill-gap analyzer", layout="wide")
 #Background:
 st.markdown("""
     <style>
+        /* Global Background */
         .stApp {
             background-color: #f2ede4;
         }
 
-        .main-header {
-            background: linear-gradient(135deg, #fcebdb 0%, #f7d7be 100%);
-            padding: 40px;
-            border-radius: 40px;
-            text-align: center;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-
+        /* Bento Cards */
         [data-testid="stVerticalBlock"] > div:has(div[data-testid="stVerticalBlock"]) {
             background-color: #faf8f5;
-            padding: 25px;
-            border-radius: 30px 30px 80px 30px;
+            padding: 25px; border-radius: 30px 30px 80px 30px;
             box-shadow: 5px 5px 20px rgba(0,0,0,0.02);
-            border: 1px solid #ffffff;
-            margin-bottom: 20px;
+            border: 1px solid #ffffff; margin-bottom: 20px;
         }
 
+        /* Sidebar Slider in Nano Green */
+        div[data-baseweb="slider"] > div > div {
+            background-color: #39e393 !important;
+        }
+
+        /* Highlighting FOUND skills (Black & Bold) */
+        /* This targets the label of disabled checkboxes that are checked */
+        .stCheckbox div[data-testid="stWidgetLabel"] p {
+            color: #1a1a1a !important;
+            font-weight: 700 !important;
+            opacity: 1 !important; /* Removes the grey transparency */
+        }
+
+        /* Custom Checkbox Color (Green for found skills) */
+        div[data-testid="stCheckbox"] span[role="checkbox"][aria-checked="true"] {
+            background-color: #39e393 !important;
+            border-color: #39e393 !important;
+        }
+
+        /* Main Button */
         .stButton>button {
-            background-color: #e68a4d;
-            color: white;
-            border-radius: 20px;
-            border: none;
-            padding: 10px 25px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        
-        .stButton>button:hover {
-            background-color: #d3753b;
-            transform: scale(1.02);
-        }
-
-        .stTextInput>div>div>input, .stTextArea>div>div>textarea {
-            border-radius: 15px;
-            border: 1px solid #e0d9ce;
-            background-color: #ffffff;
+            background-color: #e68a4d; color: white; border-radius: 20px;
+            border: none; padding: 10px 25px; font-weight: bold;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -67,7 +62,7 @@ st.sidebar.info("1. Upload your CV\n2. Paste the job description\n3. Click Analy
 st.markdown("""
     <div class="main-header">
         <h1 style="color: #2d2d2d; font-size: 45px; margin-bottom: 0;">Skill-Gap Analyzer</h1>
-        <p style="color: #6d6d6d; font-size: 18px;">AI-powered professional benchmarking & career roadmap.</p>
+        <p style="color: #6d6d6d; font-size: 18px;">Match your skills with your dream job.</p>
     </div>
 """, unsafe_allow_html=True)
 
@@ -104,7 +99,6 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
         soft_skills = ["Leadership", "Communication", "Teamwork", "Agile", "Management", "Problem Solving"]
         languages = ["English", "Spanish", "French", "German", "Italian"]
 
-        # Logic to find matches
         file_name = uploaded_cv.name if uploaded_cv else ""
         cv_content = (cv_text if cv_text else "") + " " + file_name
 
@@ -112,11 +106,10 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
         found_jd = [s for s in hard_skills + soft_skills + languages if s.lower() in job_desc.lower()]
         missing_skills = [s for s in found_jd if s not in found_cv]
 
-        # 7. Results Section
         st.divider()
         st.header("📊 Detailed Skill Analysis")
 
-        # Checklist
+        # Checklist:
         st.subheader("✅ Skills Checklist")
         check_col1, check_col2 = st.columns(2)
 
@@ -134,7 +127,11 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
                 for skill in missing_skills:
                     st.checkbox(skill, value=False, key=f"missing_{skill}", disabled=True)
             else:
-                st.success("You have all the required skills mentioned in the JD!")
+                st.markdown(f"""
+                    <div style="background-color: #39e393; color: white; padding: 10px; border-radius: 10px; text-align: center; font-weight: bold;">
+                    🌟 Analysis Complete! Discover your professional roadmap below.
+                    </div>
+                """, unsafe_allow_html=True)
 
         # Chart
         st.divider()
@@ -158,7 +155,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             data=chart_data, 
             x="Category", 
             y=["Current Profile", "Job Requirements"], 
-            color=["#e68a4d", "#2d2d2d"], # Matched to our Burnt Orange and Dark Grey theme
+            color=["#e68a4d", "#39e393"], # Orange for you, Green for the Job
             stack=False
         )
         

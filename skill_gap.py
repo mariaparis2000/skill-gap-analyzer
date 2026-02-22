@@ -12,37 +12,40 @@ st.markdown("""
             background-color: #f2ede4;
         }
 
+        /* Hero Section */
+        .main-header {
+            background: linear-gradient(135deg, #fcebdb 0%, #f7d7be 100%);
+            padding: 40px; border-radius: 40px; text-align: center; margin-bottom: 30px;
+        }
+
         /* Bento Cards */
         [data-testid="stVerticalBlock"] > div:has(div[data-testid="stVerticalBlock"]) {
             background-color: #faf8f5;
             padding: 25px; border-radius: 30px 30px 80px 30px;
-            box-shadow: 5px 5px 20px rgba(0,0,0,0.02);
             border: 1px solid #ffffff; margin-bottom: 20px;
         }
 
-        /* Sidebar Slider in Nano Green */
-        div[data-baseweb="slider"] > div > div {
-            background-color: #39e393 !important;
+        /* Main Button & Slider: Nano Forest Green (#2e4d3d) */
+        .stButton>button, div[data-baseweb="slider"] > div > div {
+            background-color: #2e4d3d !important;
+        }
+        
+        .stButton>button {
+            color: white !important; border-radius: 20px; border: none; 
+            padding: 10px 25px; font-weight: bold; width: 100%;
         }
 
-        /* Highlighting FOUND skills (Black & Bold) */
-        /* This targets the label of disabled checkboxes that are checked */
-        .stCheckbox div[data-testid="stWidgetLabel"] p {
-            color: #1a1a1a !important;
-            font-weight: 700 !important;
-            opacity: 1 !important; /* Removes the grey transparency */
-        }
-
-        /* Custom Checkbox Color (Green for found skills) */
+        /* Skills Checklist: Vibrant Green Ticks (#39e393) */
+        /* This forces the checkbox icon to be green and the text to be solid black */
         div[data-testid="stCheckbox"] span[role="checkbox"][aria-checked="true"] {
             background-color: #39e393 !important;
             border-color: #39e393 !important;
         }
 
-        /* Main Button */
-        .stButton>button {
-            background-color: #e68a4d; color: white; border-radius: 20px;
-            border: none; padding: 10px 25px; font-weight: bold;
+        .stCheckbox div[data-testid="stWidgetLabel"] p {
+            color: #1a1a1a !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -155,7 +158,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             data=chart_data, 
             x="Category", 
             y=["Current Profile", "Job Requirements"], 
-            color=["#e68a4d", "#39e393"], # Orange for you, Green for the Job
+            color=["#e68a4d", "#2e4d3d"], 
             stack=False
         )
         

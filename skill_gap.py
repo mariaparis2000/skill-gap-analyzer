@@ -7,45 +7,37 @@ st.set_page_config(page_title="Skill-gap analyzer", layout="wide")
 #Background:
 st.markdown("""
     <style>
-        /* Global Background */
-        .stApp {
-            background-color: #f2ede4;
-        }
-
-        /* Hero Section */
-        .main-header {
-            background: linear-gradient(135deg, #fcebdb 0%, #f7d7be 100%);
-            padding: 40px; border-radius: 40px; text-align: center; margin-bottom: 30px;
-        }
-
-        /* Bento Cards */
-        [data-testid="stVerticalBlock"] > div:has(div[data-testid="stVerticalBlock"]) {
-            background-color: #faf8f5;
-            padding: 25px; border-radius: 30px 30px 80px 30px;
-            border: 1px solid #ffffff; margin-bottom: 20px;
-        }
-
-        /* Main Button & Slider: Nano Forest Green (#2e4d3d) */
-        .stButton>button, div[data-baseweb="slider"] > div > div {
+        /* 1. SLIDER LINE - All in Forest Green */
+        /* This targets both the progress and the remaining track */
+        div[data-baseweb="slider"] > div > div, 
+        div[data-baseweb="slider"] > div > div > div:first-child {
             background-color: #2e4d3d !important;
         }
-        
+
+        /* 2. SLIDER HANDLE (The circle) - Forest Green */
+        div[data-baseweb="slider"] > div > div > div > div {
+            background-color: #2e4d3d !important;
+        }
+
+        /* 3. TEXT LABELS (Fast, Standard, Detailed) */
+        /* Black text, no background, no underline */
+        div[data-baseweb="slider"] + div > div {
+            background-color: transparent !important; /* No background box */
+            color: #000000 !important; /* Pure Black */
+            text-decoration: none !important; /* No underline */
+            font-weight: 500 !important;
+        }
+
+        /* 4. SIDEBAR HEADERS & INFO */
+        [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p, [data-testid="stSidebar"] span {
+            color: #000000 !important;
+        }
+
+        /* 5. MAIN BUTTON - Keeping the Forest Green for consistency */
         .stButton>button {
-            color: white !important; border-radius: 20px; border: none; 
-            padding: 10px 25px; font-weight: bold; width: 100%;
-        }
-
-        /* Skills Checklist: Vibrant Green Ticks (#39e393) */
-        /* This forces the checkbox icon to be green and the text to be solid black */
-        div[data-testid="stCheckbox"] span[role="checkbox"][aria-checked="true"] {
-            background-color: #39e393 !important;
-            border-color: #39e393 !important;
-        }
-
-        .stCheckbox div[data-testid="stWidgetLabel"] p {
-            color: #1a1a1a !important;
-            font-weight: 700 !important;
-            opacity: 1 !important;
+            background-color: #2e4d3d !important;
+            color: #ffffff !important;
+            border-radius: 20px;
         }
     </style>
 """, unsafe_allow_html=True)

@@ -195,7 +195,69 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
         st.divider()
         st.header("📊 Detailed Skill Analysis")
 
+        # Calcular porcentajes por categoría:
+        def match_pct(cv_list, jd_list):
+            if not jd_list:
+                return 100
+            matched = len([s for s in jd_list if s in cv_list])
+            return round((matched / len(jd_list)) * 100)
+
+        pct_hard = match_pct([s for s in found_cv if s in hard_skills], [s for s in found_jd if s in hard_skills])
+        pct_soft = match_pct([s for s in found_cv if s in soft_skills], [s for s in found_jd if s in soft_skills])
+        pct_lang = match_pct([s for s in found_cv if s in languages],   [s for s in found_jd if s in languages])
+        pct_total = match_pct(found_cv, found_jd)
+
+        def color_for(pct):
+            if pct >= 75: return "#2e4d3d"
+            if pct >= 40: return "#c9723a"
+            return "#c0392b"
+
+        def donut_svg(pct, label, size=160):
+            r = 54
+            circ = 2 * 3.14159 * r
+            fill = (pct / 100) * circ
+            gap  = circ - fill
+            col  = color_for(pct)
+            return f"""
+            <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+                <svg width="{size}" height="{size}" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="{r}" fill="none" stroke="#e8ddd0" stroke-width="10"/>
+                    <circle cx="60" cy="60" r="{r}" fill="none" stroke="{col}" stroke-width="10"
+                        stroke-dasharray="{fill:.1f} {gap:.1f}"
+                        stroke-dashoffset="{circ/4:.1f}"
+                        stroke-linecap="round"/>
+                    <text x="60" y="55" text-anchor="middle" font-size="22" font-weight="bold" fill="#2d2d2d">{pct}%</text>
+                    <text x="60" y="73" text-anchor="middle" font-size="9" fill="#6d6d6d">match</text>
+                </svg>
+                <span style="font-size:14px;font-weight:600;color:#2d2d2d;">{label}</span>
+            </div>"""
+
+        # Gráfico total destacado + 3 categorías:
+        st.markdown(f"""
+        <div style="background:#faf8f5;border-radius:24px;padding:32px 24px;border:1px solid #ffffff;margin-bottom:24px;">
+            <div style="display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:24px;">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+                    <svg width="200" height="200" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="54" fill="none" stroke="#e8ddd0" stroke-width="11"/>
+                        <circle cx="60" cy="60" r="54" fill="none" stroke="{color_for(pct_total)}" stroke-width="11"
+                            stroke-dasharray="{(pct_total/100)*339.3:.1f} {339.3-(pct_total/100)*339.3:.1f}"
+                            stroke-dashoffset="84.8"
+                            stroke-linecap="round"/>
+                        <text x="60" y="53" text-anchor="middle" font-size="26" font-weight="bold" fill="#2d2d2d">{pct_total}%</text>
+                        <text x="60" y="71" text-anchor="middle" font-size="8.5" fill="#6d6d6d">overall match</text>
+                    </svg>
+                    <span style="font-size:16px;font-weight:700;color:#2d2d2d;">Overall Match</span>
+                </div>
+                <div style="width:1px;height:140px;background:#e8ddd0;"></div>
+                {donut_svg(pct_hard, "Hard Skills")}
+                {donut_svg(pct_soft, "Soft Skills")}
+                {donut_svg(pct_lang, "Languages")}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
         # Checklist:
+        st.divider()
         st.subheader("✅ Skills Checklist")
         check_col1, check_col2 = st.columns(2)
 
@@ -203,7 +265,11 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             st.markdown("**Skills Found in your Profile:**")
             if found_cv:
                 for skill in found_cv:
-                    st.checkbox(skill, value=True, key=f"found_{skill}", disabled=True)
+                    st.markdown(f"""
+                    <div style="display:flex;align-items:center;gap:10px;padding:5px 0;">
+                        <span style="color:#2e4d3d;font-size:18px;">✅</span>
+                        <span style="font-weight:600;color:#1a1a1a;">{skill}</span>
+                    </div>""", unsafe_allow_html=True)
             else:
                 st.warning("No matching skills found.")
 
@@ -211,39 +277,17 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             st.markdown("**Skills Missing (Required by Job):**")
             if missing_skills:
                 for skill in missing_skills:
-                    st.checkbox(skill, value=False, key=f"missing_{skill}", disabled=True)
+                    st.markdown(f"""
+                    <div style="display:flex;align-items:center;gap:10px;padding:5px 0;">
+                        <span style="color:#c9723a;font-size:18px;">⬜</span>
+                        <span style="font-weight:600;color:#1a1a1a;">{skill}</span>
+                    </div>""", unsafe_allow_html=True)
             else:
-                st.markdown(f"""
-                    <div style="background-color: #2e4d3d; color: white; padding: 10px; border-radius: 10px; text-align: center; font-weight: bold;">
+                st.markdown("""
+                    <div style="background-color:#2e4d3d;color:white;padding:10px;border-radius:10px;text-align:center;font-weight:bold;">
                     🌟 Analysis Complete! You have all the required skills.
                     </div>
                 """, unsafe_allow_html=True)
-
-        # Chart
-        st.divider()
-        st.subheader("📈 Proficiency Gap")
-        
-        chart_data = {
-            "Category": ["Hard Skills", "Soft Skills", "Languages"],
-            "Current Profile": [
-                len([s for s in found_cv if s in hard_skills]), 
-                len([s for s in found_cv if s in soft_skills]), 
-                len([s for s in found_cv if s in languages])
-            ],
-            "Job Requirements": [
-                len([s for s in found_jd if s in hard_skills]), 
-                len([s for s in found_jd if s in soft_skills]), 
-                len([s for s in found_jd if s in languages])
-            ]
-        }
-        
-        st.bar_chart(
-            data=chart_data, 
-            x="Category", 
-            y=["Current Profile", "Job Requirements"], 
-            color=["#c9723a", "#2e4d3d"], 
-            stack=False
-        )
         
     else:
         st.error("Missing data: Please provide both your profile (PDF or Text) and the job description.")

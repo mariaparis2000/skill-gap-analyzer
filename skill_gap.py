@@ -37,18 +37,30 @@ st.markdown("""
             -webkit-text-fill-color: #000000 !important;
         }
 
+        /* Quitar subrayado del label del slider */
+        div[data-baseweb="slider"] span {
+            text-decoration: none !important;
+            border-bottom: none !important;
+            box-shadow: none !important;
+        }
+
+        div[data-baseweb="slider"] [data-testid="stWidgetLabel"] {
+            text-decoration: none !important;
+            box-shadow: none !important;
+        }
+
         /* 3. SLIDER LINE COLORS */
-        /* Left part (Progress): DARK GREEN */
+        /* Left part (Progress): NARANJA */
         div[data-baseweb="slider"] > div > div > div:first-child {
-            background-color: #2e4d3d !important;
+            background-color: #e68a4d !important;
         }
         /* Right part (Remaining): BLACK */
         div[data-baseweb="slider"] > div > div {
             background-color: #000000 !important;
         }
-        /* Knob (Circle): DARK GREEN */
+        /* Knob (Circle): NARANJA */
         div[data-baseweb="slider"] > div > div > div > div {
-            background-color: #2e4d3d !important;
+            background-color: #e68a4d !important;
             border: none !important;
         }
 
@@ -64,7 +76,32 @@ st.markdown("""
             background-color: #f2ede4 !important;
         }
 
-        /* 5. CHECKLIST STYLING */
+        /* 5. INFO BOX (st.info) - quitar azul, poner tono cálido */
+        div[data-testid="stAlert"][kind="info"],
+        div[data-baseweb="notification"] {
+            background-color: #fdf3e7 !important;
+            border-left-color: #e68a4d !important;
+            color: #2d2d2d !important;
+        }
+        div[data-testid="stAlert"][kind="info"] p,
+        div[data-testid="stAlert"][kind="info"] svg {
+            color: #2d2d2d !important;
+            fill: #e68a4d !important;
+        }
+
+        /* 6. TEXT AREA & TEXT INPUT - fondo cálido, borde sutil */
+        textarea, input[type="text"] {
+            background-color: #fdf3e7 !important;
+            border: 1px solid #e8ddd0 !important;
+            border-radius: 10px !important;
+            color: #2d2d2d !important;
+        }
+        textarea:focus, input[type="text"]:focus {
+            border-color: #e68a4d !important;
+            box-shadow: 0 0 0 2px rgba(230, 138, 77, 0.2) !important;
+        }
+
+        /* 7. CHECKLIST STYLING */        
         div[data-testid="stCheckbox"] span[role="checkbox"][aria-checked="true"] {
             background-color: #39e393 !important;
             border-color: #39e393 !important;

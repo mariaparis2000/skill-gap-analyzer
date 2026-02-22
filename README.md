@@ -1,15 +1,16 @@
-# 🎯 Skill-Gap AI Analyzer
+# Skill-Gap AI Analyzer
 
-An interactive data-driven tool designed to help professionals bridge the gap between their current profile and market requirements. This application analyzes your CV against specific job descriptions to provide visual insights, compatibility metrics, and AI-powered career coaching.
+Bridging the gap between your current profile and your target job requirements. 
 
 ## 🚀 Features
 
-- **Dual Input System:** Upload your CV in PDF format or paste your professional summary directly.
-- **Real-Time Analysis:** Instant keyword matching for Hard Skills, Soft Skills, and Languages.
-- **Interactive Dashboard:** - **Compatibility Metrics:** Overall match percentage and KPI indicators.
-  - **Skill Gap Visualization:** Side-by-side bar charts comparing your profile vs. market demand.
-  - **Detailed Checklist:** Visual confirmation of skills detected and skills missing.
-- **AI Career Coach:** Personalized AI-generated advice to help you improve your professional standing.
+- **Input system:** Upload your CV in PDF format or paste your professional summary directly.
+- **Real-time analysis:** Instant keyword matching for Hard Skills, Soft Skills, and Languages.
+- **Interactive fashboard:** 
+  - **Compatibility metrics:** Overall match percentage and KPI indicators.
+  - **Skill gap visualization:** Side-by-side bar charts comparing your profile vs. market demand.
+  - **Detailed checklist:** Visual confirmation of skills detected and skills missing.
+- **AI Career coach:** Personalized AI-generated advice to help you improve your professional standing.
 
 ## 🛠️ Technology Stack
 
@@ -30,4 +31,5 @@ An interactive data-driven tool designed to help professionals bridge the gap be
     pip install -r requirements.txt
 
 3. **Run the application:**
-streamlit run skill_gap.py
+    ```bash
+    streamlit run skill_gap.py

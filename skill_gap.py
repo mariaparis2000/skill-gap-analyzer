@@ -23,41 +23,45 @@ st.markdown("""
             border: 1px solid #ffffff; margin-bottom: 20px;
         }
 
-        /* 2. SLIDER CLEANUP (NO BACKGROUNDS, NO UNDERLINES, PURE BLACK TEXT) */
-        div[data-baseweb="slider"] span, 
-        div[data-baseweb="slider"] div,
+        /* 2. SLIDER CLEANUP - ENFOQUE NUCLEAR */
+        /* Resetear TODO dentro del slider y su tooltip */
+        [data-testid="stSlider"] *,
+        [data-testid="stSlider"] *::before,
+        [data-testid="stSlider"] *::after,
+        div[data-baseweb="slider"] *,
+        div[data-baseweb="slider"] *::before,
+        div[data-baseweb="slider"] *::after {
+            text-decoration: none !important;
+            text-decoration-line: none !important;
+            text-decoration-style: none !important;
+            -webkit-text-decoration: none !important;
+            border-bottom: 0px !important;
+            box-shadow: none !important;
+            outline: none !important;
+            color: #000000 !important;
+            -webkit-text-fill-color: #000000 !important;
+        }
+
+        /* El tooltip flotante de BaseWeb (la cajita con el valor) */
+        [data-baseweb="tooltip"] *,
+        [data-baseweb="tooltip-inner"] *,
+        body > div[role="tooltip"] *,
+        body > div[data-baseweb="layer"] * {
+            text-decoration: none !important;
+            text-decoration-line: none !important;
+            -webkit-text-decoration: none !important;
+            border-bottom: 0px solid transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* Tick bar (etiquetas Fast / Standard / Detailed) */
         div[data-testid="stTickBarItem"],
         [data-testid="stTickBar"] div {
             background-color: transparent !important;
             background: none !important;
-            color: #000000 !important;
             text-decoration: none !important;
-            text-decoration-line: none !important;
             border: none !important;
             box-shadow: none !important;
-            -webkit-text-fill-color: #000000 !important;
-        }
-
-        /* Quitar subrayado - múltiples selectores para asegurar */
-        div[data-baseweb="slider"] span,
-        div[data-baseweb="slider"] span *,
-        div[data-baseweb="tooltip"] span,
-        div[data-baseweb="tooltip"] div,
-        [data-testid="stSlider"] span,
-        [data-testid="stSlider"] div span {
-            text-decoration: none !important;
-            text-decoration-line: none !important;
-            border-bottom: none !important;
-            box-shadow: none !important;
-            outline: none !important;
-        }
-
-        div[data-baseweb="slider"] [data-testid="stWidgetLabel"],
-        div[data-baseweb="slider"] [data-testid="stWidgetLabel"] * {
-            text-decoration: none !important;
-            text-decoration-line: none !important;
-            box-shadow: none !important;
-            border-bottom: none !important;
         }
 
         /* 3. SLIDER LINE COLORS */
@@ -160,6 +164,25 @@ st.markdown("""
 
 #Sidebar:
 st.sidebar.title("Configuration")
+
+# CSS extra con mayor prioridad para matar el subrayado del slider
+st.sidebar.html("""
+<style>
+    [data-testid="stSlider"] * { 
+        text-decoration: none !important; 
+        -webkit-text-decoration: none !important;
+        text-decoration-line: none !important;
+        border-bottom: 0 !important; 
+        box-shadow: none !important; 
+    }
+    body [data-baseweb="tooltip"] span,
+    body [data-baseweb="tooltip"] div { 
+        text-decoration: none !important; 
+        border-bottom: 0 !important; 
+        box-shadow: none !important; 
+    }
+</style>
+""")
 analysis_depth = st.sidebar.select_slider(
     "In-depth analysis:",
     options=["Fast", "Standard", "Detailed"],

@@ -208,7 +208,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
         }
 
         # Llamada a Gemini para extraer skills semánticamente:
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-2.0-flash")
 
         skill_prompt = f"""
 You are a professional career analyst. Given a candidate profile and a job description, extract and compare skills semantically (not just exact keyword matching).

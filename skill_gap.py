@@ -1,8 +1,12 @@
 import streamlit as st
 import time
+import google.generativeai as genai
 
 #Browser tab:
 st.set_page_config(page_title="Skill-gap analyzer", layout="wide")
+
+#Gemini setup:
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 #Background:
 st.markdown("""
@@ -129,6 +133,19 @@ st.markdown("""
             font-weight: 700 !important;
             opacity: 1 !important;
         }
+
+        /* 9. AI COACH BOX */
+        .ai-coach-box {
+            background: linear-gradient(135deg, #faf8f5 0%, #fdf3e7 100%);
+            border: 1px solid #e8ddd0;
+            border-left: 4px solid #2e4d3d;
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-top: 8px;
+            color: #2d2d2d;
+            font-size: 15px;
+            line-height: 1.7;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -171,26 +188,71 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 if st.button("🚀 Start Match Analysis", use_container_width=True):
     if (uploaded_cv or cv_text) and job_desc:
+
+        # Progress bar:
         progress_bar = st.progress(0)
         status_text = st.empty()
         status_text.info("Analyzing compatibility and identifying skill gaps...")
-        
-        for percent_complete in range(100):
+        for percent_complete in range(60):
             time.sleep(0.01)
             progress_bar.progress(percent_complete + 1)
-        
-        status_text.success("Analysis complete!")
-        
-        hard_skills = ["Python", "SQL", "Excel", "Tableau", "Power BI", "Statistics", "Machine Learning", "R", "Git"]
-        soft_skills = ["Leadership", "Communication", "Teamwork", "Agile", "Management", "Problem Solving"]
-        languages = ["English", "Spanish", "French", "German", "Italian"]
 
+        # Gemini skill extraction:
         file_name = uploaded_cv.name if uploaded_cv else ""
         cv_content = (cv_text if cv_text else "") + " " + file_name
 
-        found_cv = [s for s in hard_skills + soft_skills + languages if s.lower() in cv_content.lower()]
-        found_jd = [s for s in hard_skills + soft_skills + languages if s.lower() in job_desc.lower()]
+        depth_instructions = {
+            "Fast":     "Be concise. Give a brief 2-3 sentence summary only.",
+            "Standard": "Give a balanced analysis with key points and actionable advice.",
+            "Detailed": "Give an in-depth analysis with specific examples, priorities, and a step-by-step action plan."
+        }
+
+        # Llamada a Gemini para extraer skills semánticamente:
+        model = genai.GenerativeModel("gemini-1.5-flash")
+
+        skill_prompt = f"""
+You are a professional career analyst. Given a candidate profile and a job description, extract and compare skills semantically (not just exact keyword matching).
+
+CANDIDATE PROFILE:
+{cv_content}
+
+JOB DESCRIPTION:
+{job_desc}
+
+Return ONLY a JSON object with this exact structure, no extra text:
+{{
+  "hard_skills_cv": ["skill1", "skill2"],
+  "soft_skills_cv": ["skill1", "skill2"],
+  "languages_cv": ["lang1", "lang2"],
+  "hard_skills_jd": ["skill1", "skill2"],
+  "soft_skills_jd": ["skill1", "skill2"],
+  "languages_jd": ["lang1", "lang2"]
+}}
+"""
+        skill_response = model.generate_content(skill_prompt)
+
+        # Parsear la respuesta JSON de Gemini:
+        import json, re
+        raw = skill_response.text.strip()
+        raw = re.sub(r"```json|```", "", raw).strip()
+        skills_data = json.loads(raw)
+
+        found_cv_hard = skills_data.get("hard_skills_cv", [])
+        found_cv_soft = skills_data.get("soft_skills_cv", [])
+        found_cv_lang = skills_data.get("languages_cv", [])
+        found_jd_hard = skills_data.get("hard_skills_jd", [])
+        found_jd_soft = skills_data.get("soft_skills_jd", [])
+        found_jd_lang = skills_data.get("languages_jd", [])
+
+        found_cv = found_cv_hard + found_cv_soft + found_cv_lang
+        found_jd = found_jd_hard + found_jd_soft + found_jd_lang
         missing_skills = [s for s in found_jd if s not in found_cv]
+
+        for percent_complete in range(60, 100):
+            time.sleep(0.01)
+            progress_bar.progress(percent_complete + 1)
+
+        status_text.success("Analysis complete!")
 
         st.divider()
         st.header("📊 Detailed Skill Analysis")
@@ -202,9 +264,9 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             matched = len([s for s in jd_list if s in cv_list])
             return round((matched / len(jd_list)) * 100)
 
-        pct_hard = match_pct([s for s in found_cv if s in hard_skills], [s for s in found_jd if s in hard_skills])
-        pct_soft = match_pct([s for s in found_cv if s in soft_skills], [s for s in found_jd if s in soft_skills])
-        pct_lang = match_pct([s for s in found_cv if s in languages],   [s for s in found_jd if s in languages])
+        pct_hard  = match_pct(found_cv_hard, found_jd_hard)
+        pct_soft  = match_pct(found_cv_soft, found_jd_soft)
+        pct_lang  = match_pct(found_cv_lang, found_jd_lang)
         pct_total = match_pct(found_cv, found_jd)
 
         def color_for(pct):
@@ -212,13 +274,13 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             if pct >= 40: return "#c9723a"
             return "#c0392b"
 
-        # Gráfico total destacado + 3 categorías:
+        # Donuts SVG:
         def donut_html(pct, label, size=160):
             r = 54
             circ = 2 * 3.14159 * r
-            fill = round((pct / 100) * circ, 1)
-            gap  = round(circ - fill, 1)
-            col  = color_for(pct)
+            fill   = round((pct / 100) * circ, 1)
+            gap    = round(circ - fill, 1)
+            col    = color_for(pct)
             offset = round(circ / 4, 1)
             return f"""<div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
                 <svg width="{size}" height="{size}" viewBox="0 0 120 120">
@@ -233,11 +295,11 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
                 <span style="font-size:14px;font-weight:600;color:#2d2d2d;">{label}</span>
             </div>"""
 
-        circ_total = 2 * 3.14159 * 54
-        fill_total = round((pct_total / 100) * circ_total, 1)
-        gap_total  = round(circ_total - fill_total, 1)
+        circ_total   = 2 * 3.14159 * 54
+        fill_total   = round((pct_total / 100) * circ_total, 1)
+        gap_total    = round(circ_total - fill_total, 1)
         offset_total = round(circ_total / 4, 1)
-        col_total  = color_for(pct_total)
+        col_total    = color_for(pct_total)
 
         overall_html = f"""<div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
             <svg width="200" height="200" viewBox="0 0 120 120">
@@ -279,7 +341,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
                 for skill in found_cv:
                     st.markdown(f"""
                     <div style="display:flex;align-items:center;gap:10px;padding:5px 0;">
-                        <span style="color:#2e4d3d;font-size:18px;">✅</span>
+                        <span style="font-size:18px;">✅</span>
                         <span style="font-weight:600;color:#1a1a1a;">{skill}</span>
                     </div>""", unsafe_allow_html=True)
             else:
@@ -291,7 +353,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
                 for skill in missing_skills:
                     st.markdown(f"""
                     <div style="display:flex;align-items:center;gap:10px;padding:5px 0;">
-                        <span style="color:#c9723a;font-size:18px;">⬜</span>
+                        <span style="font-size:18px;">❌</span>
                         <span style="font-weight:600;color:#1a1a1a;">{skill}</span>
                     </div>""", unsafe_allow_html=True)
             else:
@@ -300,6 +362,41 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
                     🌟 Analysis Complete! You have all the required skills.
                     </div>
                 """, unsafe_allow_html=True)
-        
+
+        # AI Career Coach:
+        st.divider()
+        st.subheader("🤖 AI Career Coach")
+        with st.spinner("Generating your personalized career advice..."):
+            coach_prompt = f"""
+You are an expert career coach. A candidate has completed a skill-gap analysis for a job application.
+
+CANDIDATE PROFILE:
+{cv_content}
+
+TARGET JOB:
+{job_desc}
+
+ANALYSIS RESULTS:
+- Overall match: {pct_total}%
+- Hard Skills match: {pct_hard}% — Found: {found_cv_hard} — Missing: {[s for s in found_jd_hard if s not in found_cv_hard]}
+- Soft Skills match: {pct_soft}% — Found: {found_cv_soft} — Missing: {[s for s in found_jd_soft if s not in found_cv_soft]}
+- Languages match: {pct_lang}% — Found: {found_cv_lang} — Missing: {[s for s in found_jd_lang if s not in found_cv_lang]}
+
+{depth_instructions[analysis_depth]}
+
+Write your response in English, directly addressing the candidate as "you". Be encouraging but honest.
+Structure your response with these sections using emoji headers:
+💪 Your Strengths
+🎯 Priority Gaps to Close
+📚 Recommended Next Steps
+"""
+            coach_response = model.generate_content(coach_prompt)
+
+        st.markdown(f"""
+        <div class="ai-coach-box">
+            {coach_response.text.replace(chr(10), '<br>')}
+        </div>
+        """, unsafe_allow_html=True)
+
     else:
         st.error("Missing data: Please provide both your profile (PDF or Text) and the job description.")

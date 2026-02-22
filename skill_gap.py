@@ -372,14 +372,32 @@ CV summary: {cv_content[:400]}
 Job: {job_desc[:400]}
 {depth_instructions[analysis_depth]}
 Reply in English to the candidate. Use emoji headers: 💪 Your Strengths / 🎯 Priority Gaps / 📚 Next Steps"""
-            coach_response = client.models.generate_content(
-                model="gemini-2.0-flash-lite",
-                contents=coach_prompt
-            )
+            try:
+                coach_response = client.models.generate_content(
+                    model="gemini-2.0-flash-lite",
+                    contents=coach_prompt
+                )
+                coach_text = coach_response.text.replace(chr(10), '<br>')
+            except Exception:
+                # Fallback rule-based coach if API quota is exceeded:
+                strengths = ", ".join((found_cv_hard + found_cv_soft)[:5]) or "your existing experience"
+                gaps = ", ".join((missing_hard + missing_soft)[:5]) or "the specific skills listed above"
+                coach_text = f"""
+💪 <strong>Your Strengths</strong><br>
+Your profile shows solid competencies in {strengths}. 
+With a {pct_total}% overall match, you have a good foundation for this role.<br><br>
+🎯 <strong>Priority Gaps to Close</strong><br>
+Focus on developing: {gaps}. 
+These are the key areas where the job requirements go beyond your current profile.<br><br>
+📚 <strong>Recommended Next Steps</strong><br>
+1. Prioritize the missing hard skills through online courses or hands-on projects.<br>
+2. Highlight your existing strengths clearly in your CV and cover letter.<br>
+3. Consider reaching out to people in this role to better understand the day-to-day requirements.
+"""
 
         st.markdown(f"""
         <div class="ai-coach-box">
-            {coach_response.text.replace(chr(10), '<br>')}
+            {coach_text}
         </div>
         """, unsafe_allow_html=True)
 

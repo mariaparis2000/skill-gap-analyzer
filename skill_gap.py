@@ -32,21 +32,32 @@ st.markdown("""
             background: none !important;
             color: #000000 !important;
             text-decoration: none !important;
+            text-decoration-line: none !important;
             border: none !important;
             box-shadow: none !important;
             -webkit-text-fill-color: #000000 !important;
         }
 
-        /* Quitar subrayado del label del slider */
-        div[data-baseweb="slider"] span {
+        /* Quitar subrayado - múltiples selectores para asegurar */
+        div[data-baseweb="slider"] span,
+        div[data-baseweb="slider"] span *,
+        div[data-baseweb="tooltip"] span,
+        div[data-baseweb="tooltip"] div,
+        [data-testid="stSlider"] span,
+        [data-testid="stSlider"] div span {
             text-decoration: none !important;
+            text-decoration-line: none !important;
             border-bottom: none !important;
             box-shadow: none !important;
+            outline: none !important;
         }
 
-        div[data-baseweb="slider"] [data-testid="stWidgetLabel"] {
+        div[data-baseweb="slider"] [data-testid="stWidgetLabel"],
+        div[data-baseweb="slider"] [data-testid="stWidgetLabel"] * {
             text-decoration: none !important;
+            text-decoration-line: none !important;
             box-shadow: none !important;
+            border-bottom: none !important;
         }
 
         /* 3. SLIDER LINE COLORS */
@@ -101,7 +112,40 @@ st.markdown("""
             box-shadow: 0 0 0 2px rgba(230, 138, 77, 0.2) !important;
         }
 
-        /* 7. CHECKLIST STYLING */        
+        /* 7. FILE UPLOADER - quitar azul, poner tono cálido */
+        [data-testid="stFileUploader"] section {
+            background-color: #fdf3e7 !important;
+            border: 2px dashed #e8ddd0 !important;
+            border-radius: 10px !important;
+        }
+        [data-testid="stFileUploader"] section:hover {
+            border-color: #e68a4d !important;
+        }
+        [data-testid="stFileUploader"] section svg {
+            fill: #e68a4d !important;
+            color: #e68a4d !important;
+        }
+        [data-testid="stFileUploader"] section p,
+        [data-testid="stFileUploader"] section small,
+        [data-testid="stFileUploader"] section span {
+            color: #6d6d6d !important;
+        }
+        [data-testid="stFileUploaderDropzoneInstructions"] {
+            color: #6d6d6d !important;
+        }
+        /* Botón Browse files */
+        [data-testid="stFileUploader"] button {
+            background-color: #fdf3e7 !important;
+            border: 1px solid #e68a4d !important;
+            color: #e68a4d !important;
+            border-radius: 8px !important;
+        }
+        [data-testid="stFileUploader"] button:hover {
+            background-color: #e68a4d !important;
+            color: white !important;
+        }
+
+        /* 8. CHECKLIST STYLING */        
         div[data-testid="stCheckbox"] span[role="checkbox"][aria-checked="true"] {
             background-color: #39e393 !important;
             border-color: #39e393 !important;

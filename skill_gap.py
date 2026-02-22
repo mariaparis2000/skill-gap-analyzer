@@ -1,12 +1,12 @@
 import streamlit as st
 import time
-import google.generativeai as genai
+from google import genai
 
 #Browser tab:
 st.set_page_config(page_title="Skill-gap analyzer", layout="wide")
 
 #Gemini setup:
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
 #Background:
 st.markdown("""
@@ -208,8 +208,6 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
         }
 
         # Llamada a Gemini para extraer skills semánticamente:
-        model = genai.GenerativeModel("gemini-2.0-flash")
-
         skill_prompt = f"""
 You are a professional career analyst. Given a candidate profile and a job description, extract and compare skills semantically (not just exact keyword matching).
 
@@ -229,7 +227,10 @@ Return ONLY a JSON object with this exact structure, no extra text:
   "languages_jd": ["lang1", "lang2"]
 }}
 """
-        skill_response = model.generate_content(skill_prompt)
+        skill_response = client.models.generate_content(
+            model="gemini-2.0-flash-lite",
+            contents=skill_prompt
+        )
 
         # Parsear la respuesta JSON de Gemini:
         import json, re
@@ -390,7 +391,10 @@ Structure your response with these sections using emoji headers:
 🎯 Priority Gaps to Close
 📚 Recommended Next Steps
 """
-            coach_response = model.generate_content(coach_prompt)
+            coach_response = client.models.generate_content(
+                model="gemini-2.0-flash-lite",
+                contents=coach_prompt
+            )
 
         st.markdown(f"""
         <div class="ai-coach-box">

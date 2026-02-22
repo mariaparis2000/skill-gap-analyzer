@@ -23,60 +23,30 @@ st.markdown("""
             border: 1px solid #ffffff; margin-bottom: 20px;
         }
 
-        /* 2. SLIDER CLEANUP - ENFOQUE NUCLEAR */
-        /* Resetear TODO dentro del slider y su tooltip */
-        [data-testid="stSlider"] *,
-        [data-testid="stSlider"] *::before,
-        [data-testid="stSlider"] *::after,
-        div[data-baseweb="slider"] *,
-        div[data-baseweb="slider"] *::before,
-        div[data-baseweb="slider"] *::after {
-            text-decoration: none !important;
-            text-decoration-line: none !important;
-            text-decoration-style: none !important;
-            -webkit-text-decoration: none !important;
-            border-bottom: 0px !important;
-            box-shadow: none !important;
-            outline: none !important;
-            color: #000000 !important;
-            -webkit-text-fill-color: #000000 !important;
+        /* 2. RADIO BUTTONS (reemplazo del slider) - estilo custom */
+        div[data-testid="stRadio"] div[role="radiogroup"] {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 6px !important;
+        }
+        div[data-testid="stRadio"] label {
+            background-color: #faf8f5 !important;
+            border: 1px solid #e8ddd0 !important;
+            border-radius: 10px !important;
+            padding: 6px 14px !important;
+            cursor: pointer !important;
+        }
+        div[data-testid="stRadio"] label:hover {
+            border-color: #c9723a !important;
+            background-color: #fdf3e7 !important;
         }
 
-        /* El tooltip flotante de BaseWeb (la cajita con el valor) */
-        [data-baseweb="tooltip"] *,
-        [data-baseweb="tooltip-inner"] *,
-        body > div[role="tooltip"] *,
-        body > div[data-baseweb="layer"] * {
-            text-decoration: none !important;
-            text-decoration-line: none !important;
-            -webkit-text-decoration: none !important;
-            border-bottom: 0px solid transparent !important;
-            box-shadow: none !important;
+        /* 3. PROGRESS BAR - tono cálido apagado */
+        div[data-testid="stProgressBar"] > div {
+            background-color: #e8ddd0 !important;
         }
-
-        /* Tick bar (etiquetas Fast / Standard / Detailed) */
-        div[data-testid="stTickBarItem"],
-        [data-testid="stTickBar"] div {
-            background-color: transparent !important;
-            background: none !important;
-            text-decoration: none !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
-
-        /* 3. SLIDER LINE COLORS */
-        /* Left part (Progress): NARANJA */
-        div[data-baseweb="slider"] > div > div > div:first-child {
-            background-color: #e68a4d !important;
-        }
-        /* Right part (Remaining): BLACK */
-        div[data-baseweb="slider"] > div > div {
-            background-color: #000000 !important;
-        }
-        /* Knob (Circle): NARANJA */
-        div[data-baseweb="slider"] > div > div > div > div {
-            background-color: #e68a4d !important;
-            border: none !important;
+        div[data-testid="stProgressBar"] > div > div {
+            background-color: #c9723a !important;
         }
 
         /* 4. MAIN BUTTON & SIDEBAR */
@@ -95,13 +65,13 @@ st.markdown("""
         div[data-testid="stAlert"][kind="info"],
         div[data-baseweb="notification"] {
             background-color: #fdf3e7 !important;
-            border-left-color: #e68a4d !important;
+            border-left-color: #c9723a !important;
             color: #2d2d2d !important;
         }
         div[data-testid="stAlert"][kind="info"] p,
         div[data-testid="stAlert"][kind="info"] svg {
             color: #2d2d2d !important;
-            fill: #e68a4d !important;
+            fill: #c9723a !important;
         }
 
         /* 6. TEXT AREA & TEXT INPUT - fondo cálido, borde sutil */
@@ -112,8 +82,8 @@ st.markdown("""
             color: #2d2d2d !important;
         }
         textarea:focus, input[type="text"]:focus {
-            border-color: #e68a4d !important;
-            box-shadow: 0 0 0 2px rgba(230, 138, 77, 0.2) !important;
+            border-color: #c9723a !important;
+            box-shadow: 0 0 0 2px rgba(201, 114, 58, 0.2) !important;
         }
 
         /* 7. FILE UPLOADER - quitar azul, poner tono cálido */
@@ -123,11 +93,11 @@ st.markdown("""
             border-radius: 10px !important;
         }
         [data-testid="stFileUploader"] section:hover {
-            border-color: #e68a4d !important;
+            border-color: #c9723a !important;
         }
         [data-testid="stFileUploader"] section svg {
-            fill: #e68a4d !important;
-            color: #e68a4d !important;
+            fill: #c9723a !important;
+            color: #c9723a !important;
         }
         [data-testid="stFileUploader"] section p,
         [data-testid="stFileUploader"] section small,
@@ -140,16 +110,16 @@ st.markdown("""
         /* Botón Browse files */
         [data-testid="stFileUploader"] button {
             background-color: #fdf3e7 !important;
-            border: 1px solid #e68a4d !important;
-            color: #e68a4d !important;
+            border: 1px solid #c9723a !important;
+            color: #c9723a !important;
             border-radius: 8px !important;
         }
         [data-testid="stFileUploader"] button:hover {
-            background-color: #e68a4d !important;
+            background-color: #c9723a !important;
             color: white !important;
         }
 
-        /* 8. CHECKLIST STYLING */        
+        /* 8. CHECKLIST STYLING */
         div[data-testid="stCheckbox"] span[role="checkbox"][aria-checked="true"] {
             background-color: #39e393 !important;
             border-color: #39e393 !important;
@@ -164,29 +134,11 @@ st.markdown("""
 
 #Sidebar:
 st.sidebar.title("Configuration")
-
-# CSS extra con mayor prioridad para matar el subrayado del slider
-st.sidebar.html("""
-<style>
-    [data-testid="stSlider"] * { 
-        text-decoration: none !important; 
-        -webkit-text-decoration: none !important;
-        text-decoration-line: none !important;
-        border-bottom: 0 !important; 
-        box-shadow: none !important; 
-    }
-    body [data-baseweb="tooltip"] span,
-    body [data-baseweb="tooltip"] div { 
-        text-decoration: none !important; 
-        border-bottom: 0 !important; 
-        box-shadow: none !important; 
-    }
-</style>
-""")
-analysis_depth = st.sidebar.select_slider(
+analysis_depth = st.sidebar.radio(
     "In-depth analysis:",
     options=["Fast", "Standard", "Detailed"],
-    value="Standard"
+    index=1,
+    horizontal=True
 )
 st.sidebar.divider()
 st.sidebar.markdown("### How to use")
@@ -289,7 +241,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             data=chart_data, 
             x="Category", 
             y=["Current Profile", "Job Requirements"], 
-            color=["#e68a4d", "#2e4d3d"], 
+            color=["#c9723a", "#2e4d3d"], 
             stack=False
         )
         

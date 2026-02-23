@@ -208,7 +208,41 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
                     pdf_text += page.extract_text() or ""
             except Exception as e:
                 st.warning(f"Could not read PDF text: {e}")
+
+        # Clean and normalize extracted text:
+        import re
+        pdf_text = re.sub(r'\s+', ' ', pdf_text)  # collapse newlines/tabs into spaces
+        pdf_text = pdf_text.replace('PowerBI', 'Power BI').replace('powerbi', 'Power BI')
         cv_content = (cv_text if cv_text else "") + " " + pdf_text + " " + file_name
+
+        # Aliases: map variations to canonical skill names in cv_content for matching
+        aliases = {
+            "Power BI": ["PowerBI", "powerbi", "power bi"],
+            "Machine Learning": ["machine learning", "ML", "ml"],
+            "Data Visualization": ["data visualization", "data viz", "dataviz"],
+            "Communication": ["communicating", "communications", "comunicación"],
+            "Critical Thinking": ["critical thinking", "critical-thinking"],
+            "Presentation": ["presentations", "presenting"],
+            "Statistics": ["statistical", "stats"],
+            "Python": ["python"],
+            "SQL": ["sql"],
+            "Tableau": ["tableau"],
+            "AWS": ["aws", "amazon web services"],
+            "Excel": ["excel", "microsoft excel"],
+            "Agile": ["agile", "agile methodologies"],
+            "Leadership": ["leadership", "leading", "led"],
+            "Teamwork": ["teamwork", "team work", "cross-functional"],
+            "Project Management": ["project management", "managing projects"],
+        }
+        # Build an expanded cv_content with canonical names injected:
+        cv_expanded = cv_content.lower()
+        canonical_injections = []
+        for canonical, variants in aliases.items():
+            for variant in variants:
+                if variant.lower() in cv_expanded:
+                    canonical_injections.append(canonical)
+                    break
+        cv_content = cv_content + " " + " ".join(canonical_injections)
 
         depth_instructions = {
             "Fast":     "Be concise. Give a brief 2-3 sentence summary only.",

@@ -197,9 +197,18 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             time.sleep(0.01)
             progress_bar.progress(percent_complete + 1)
 
-        # Gemini skill extraction:
+        # PDF reading + text input:
         file_name = uploaded_cv.name if uploaded_cv else ""
-        cv_content = (cv_text if cv_text else "") + " " + file_name
+        pdf_text = ""
+        if uploaded_cv:
+            try:
+                import PyPDF2
+                reader = PyPDF2.PdfReader(uploaded_cv)
+                for page in reader.pages:
+                    pdf_text += page.extract_text() or ""
+            except Exception as e:
+                st.warning(f"Could not read PDF text: {e}")
+        cv_content = (cv_text if cv_text else "") + " " + pdf_text + " " + file_name
 
         depth_instructions = {
             "Fast":     "Be concise. Give a brief 2-3 sentence summary only.",

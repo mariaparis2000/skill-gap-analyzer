@@ -22,7 +22,7 @@ Bridging the gap between your current profile and your target job requirements.
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/tu-usuario/skill-gap-analyzer.git
+   git clone https://github.com/mariaparis2000/skill-gap-analyzer.git
    cd skill-gap-analyzer
    ```
 
@@ -55,6 +55,4 @@ Bridging the gap between your current profile and your target job requirements.
    ```
 
 ## 🔒 Security
-
 This project uses Streamlit's secrets management to keep API keys safe.
-Never hardcode your API key directly in the code.

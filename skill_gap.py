@@ -197,7 +197,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             time.sleep(0.01)
             progress_bar.progress(percent_complete + 1)
 
-        # PDF reading + text input:
+        # PDF reading:
         file_name = uploaded_cv.name if uploaded_cv else ""
         pdf_text = ""
         if uploaded_cv:
@@ -211,14 +211,14 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
 
         # Clean and normalize extracted text:
         import re
-        pdf_text = re.sub(r'\s+', ' ', pdf_text)  # collapse newlines/tabs into spaces
+        pdf_text = re.sub(r'\s+', ' ', pdf_text) 
         pdf_text = pdf_text.replace('PowerBI', 'Power BI').replace('powerbi', 'Power BI')
         cv_content = (cv_text if cv_text else "") + " " + pdf_text + " " + file_name
 
         st.write("🔍 DEBUG - primeros 500 chars del CV extraído:")
         st.code(cv_content[:500])
 
-        # Aliases: map variations to canonical skill names in cv_content for matching
+        # Aliases: 
         aliases = {
             "Power BI": ["PowerBI", "powerbi", "power bi"],
             "Machine Learning": ["machine learning", "ML", "ml"],
@@ -237,7 +237,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             "Teamwork": ["teamwork", "team work", "cross-functional"],
             "Project Management": ["project management", "managing projects"],
         }
-        # Build an expanded cv_content with canonical names injected:
+        #Expanded cv_content with canonical names injected:
         cv_expanded = cv_content.lower()
         canonical_injections = []
         for canonical, variants in aliases.items():
@@ -253,7 +253,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             "Detailed": "Give an in-depth analysis with specific examples, priorities, and a step-by-step action plan."
         }
 
-        # Skill dictionaries - extended for robust matching:
+        #Skill dictionaries:
         hard_skills = [
             "Python", "SQL", "Excel", "Tableau", "Power BI", "Statistics", "Machine Learning",
             "R", "Git", "TensorFlow", "PyTorch", "Scikit-learn", "Pandas", "NumPy", "Matplotlib",
@@ -276,7 +276,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             "Mandarin", "Japanese", "Arabic", "Dutch", "Russian", "Korean", "Swedish", "Catalan"
         ]
 
-        # Keyword matching across dictionaries:
+        #Keyword matching across dictionaries:
         found_cv_hard = [s for s in hard_skills if s.lower() in cv_content.lower()]
         found_cv_soft = [s for s in soft_skills if s.lower() in cv_content.lower()]
         found_cv_lang = [s for s in languages  if s.lower() in cv_content.lower()]
@@ -297,7 +297,6 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
         st.divider()
         st.header("📊 Detailed Skill Analysis")
 
-        # Calcular porcentajes por categoría:
         def match_pct(cv_list, jd_list):
             if not jd_list:
                 return 100
@@ -314,7 +313,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             if pct >= 40: return "#c9723a"
             return "#c0392b"
 
-        # Donuts SVG:
+        #Donuts:
         def donut_html(pct, label, size=160):
             r = 54
             circ = 2 * 3.14159 * r
@@ -370,7 +369,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
         </div>
         """, unsafe_allow_html=True)
 
-        # Checklist:
+        #Checklist:
         st.divider()
         st.subheader("✅ Skills Checklist")
         check_col1, check_col2 = st.columns(2)
@@ -403,7 +402,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
                     </div>
                 """, unsafe_allow_html=True)
 
-        # AI Career Coach:
+        #AI Career Coach:
         st.divider()
         st.subheader("🤖 AI Career Coach")
         with st.spinner("Generating your personalized career advice..."):

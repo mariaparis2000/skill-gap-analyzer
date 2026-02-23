@@ -215,9 +215,6 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
         pdf_text = pdf_text.replace('PowerBI', 'Power BI').replace('powerbi', 'Power BI')
         cv_content = (cv_text if cv_text else "") + " " + pdf_text + " " + file_name
 
-        st.write("🔍 DEBUG - primeros 500 chars del CV extraído:")
-        st.code(cv_content[:500])
-
         # Aliases: 
         aliases = {
             "Power BI": ["PowerBI", "powerbi", "power bi"],

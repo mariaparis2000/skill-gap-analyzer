@@ -1,5 +1,7 @@
 import streamlit as st
 import time
+import json
+import re
 from google import genai
 
 #Browser tab:
@@ -27,7 +29,7 @@ st.markdown("""
             border: 1px solid #ffffff; margin-bottom: 20px;
         }
 
-        /* 2. RADIO BUTTONS (reemplazo del slider) - estilo custom */
+        /* 2. RADIO BUTTONS */
         div[data-testid="stRadio"] div[role="radiogroup"] {
             display: flex !important;
             flex-direction: row !important;
@@ -45,7 +47,7 @@ st.markdown("""
             background-color: #fdf3e7 !important;
         }
 
-        /* 3. PROGRESS BAR - tono cálido apagado */
+        /* 3. PROGRESS BAR */
         div[data-testid="stProgressBar"] > div {
             background-color: #e8ddd0 !important;
         }
@@ -65,7 +67,7 @@ st.markdown("""
             background-color: #f2ede4 !important;
         }
 
-        /* 5. INFO BOX (st.info) - quitar azul, poner tono cálido */
+        /* 5. INFO BOX */
         div[data-testid="stAlert"][kind="info"],
         div[data-baseweb="notification"] {
             background-color: #fdf3e7 !important;
@@ -78,7 +80,7 @@ st.markdown("""
             fill: #c9723a !important;
         }
 
-        /* 6. TEXT AREA & TEXT INPUT - fondo cálido, borde sutil */
+        /* 6. TEXT AREA & TEXT INPUT */
         textarea, input[type="text"] {
             background-color: #fdf3e7 !important;
             border: 1px solid #e8ddd0 !important;
@@ -90,7 +92,7 @@ st.markdown("""
             box-shadow: 0 0 0 2px rgba(201, 114, 58, 0.2) !important;
         }
 
-        /* 7. FILE UPLOADER - quitar azul, poner tono cálido */
+        /* 7. FILE UPLOADER */
         [data-testid="stFileUploader"] section {
             background-color: #fdf3e7 !important;
             border: 2px dashed #e8ddd0 !important;
@@ -111,7 +113,6 @@ st.markdown("""
         [data-testid="stFileUploaderDropzoneInstructions"] {
             color: #6d6d6d !important;
         }
-        /* Botón Browse files */
         [data-testid="stFileUploader"] button {
             background-color: #fdf3e7 !important;
             border: 1px solid #c9723a !important;
@@ -145,6 +146,51 @@ st.markdown("""
             color: #2d2d2d;
             font-size: 15px;
             line-height: 1.7;
+        }
+
+        /* 10. COURSE CARDS */
+        .course-card {
+            background: #faf8f5;
+            border: 1px solid #e8ddd0;
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            transition: border-color 0.2s;
+        }
+        .course-card:hover {
+            border-color: #c9723a;
+        }
+        .course-tag {
+            display: inline-block;
+            background: #fdf3e7;
+            border: 1px solid #e8ddd0;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 12px;
+            color: #c9723a;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+
+        /* 11. CHAT MESSAGES */
+        .chat-user {
+            background: #2e4d3d;
+            color: white;
+            border-radius: 16px 16px 4px 16px;
+            padding: 12px 18px;
+            margin: 8px 0 8px 20%;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .chat-bot {
+            background: #faf8f5;
+            border: 1px solid #e8ddd0;
+            border-radius: 16px 16px 16px 4px;
+            padding: 12px 18px;
+            margin: 8px 20% 8px 0;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #2d2d2d;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -197,7 +243,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             time.sleep(0.01)
             progress_bar.progress(percent_complete + 1)
 
-        # PDF reading:
+        # PDF reading + text input:
         file_name = uploaded_cv.name if uploaded_cv else ""
         pdf_text = ""
         if uploaded_cv:
@@ -210,31 +256,26 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
                 st.warning(f"Could not read PDF text: {e}")
 
         # Clean and normalize extracted text:
-        import re
-        pdf_text = re.sub(r'\s+', ' ', pdf_text) 
+        pdf_text = re.sub(r'\s+', ' ', pdf_text)
         pdf_text = pdf_text.replace('PowerBI', 'Power BI').replace('powerbi', 'Power BI')
         cv_content = (cv_text if cv_text else "") + " " + pdf_text + " " + file_name
 
-        # Aliases: 
+        # Aliases for flexible matching:
         aliases = {
             "Power BI": ["PowerBI", "powerbi", "power bi"],
             "Machine Learning": ["machine learning", "ML", "ml"],
             "Data Visualization": ["data visualization", "data viz", "dataviz"],
-            "Communication": ["communicating", "communications", "comunicación"],
+            "Communication": ["communicating", "communications"],
             "Critical Thinking": ["critical thinking", "critical-thinking"],
             "Presentation": ["presentations", "presenting"],
             "Statistics": ["statistical", "stats"],
-            "Python": ["python"],
-            "SQL": ["sql"],
-            "Tableau": ["tableau"],
-            "AWS": ["aws", "amazon web services"],
-            "Excel": ["excel", "microsoft excel"],
+            "Python": ["python"], "SQL": ["sql"], "Tableau": ["tableau"],
+            "AWS": ["aws", "amazon web services"], "Excel": ["excel"],
             "Agile": ["agile", "agile methodologies"],
             "Leadership": ["leadership", "leading", "led"],
             "Teamwork": ["teamwork", "team work", "cross-functional"],
             "Project Management": ["project management", "managing projects"],
         }
-        #Expanded cv_content with canonical names injected:
         cv_expanded = cv_content.lower()
         canonical_injections = []
         for canonical, variants in aliases.items():
@@ -250,7 +291,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             "Detailed": "Give an in-depth analysis with specific examples, priorities, and a step-by-step action plan."
         }
 
-        #Skill dictionaries:
+        # Skill dictionaries:
         hard_skills = [
             "Python", "SQL", "Excel", "Tableau", "Power BI", "Statistics", "Machine Learning",
             "R", "Git", "TensorFlow", "PyTorch", "Scikit-learn", "Pandas", "NumPy", "Matplotlib",
@@ -273,7 +314,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             "Mandarin", "Japanese", "Arabic", "Dutch", "Russian", "Korean", "Swedish", "Catalan"
         ]
 
-        #Keyword matching across dictionaries:
+        # Keyword matching:
         found_cv_hard = [s for s in hard_skills if s.lower() in cv_content.lower()]
         found_cv_soft = [s for s in soft_skills if s.lower() in cv_content.lower()]
         found_cv_lang = [s for s in languages  if s.lower() in cv_content.lower()]
@@ -284,6 +325,18 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
         found_cv = found_cv_hard + found_cv_soft + found_cv_lang
         found_jd = found_jd_hard + found_jd_soft + found_jd_lang
         missing_skills = [s for s in found_jd if s not in found_cv]
+        missing_hard = [s for s in found_jd_hard if s not in found_cv_hard]
+        missing_soft = [s for s in found_jd_soft if s not in found_cv_soft]
+        missing_lang = [s for s in found_jd_lang if s not in found_cv_lang]
+
+        # Save analysis context in session state for the chatbot:
+        st.session_state["analysis_done"] = True
+        st.session_state["cv_content"] = cv_content
+        st.session_state["job_desc"] = job_desc
+        st.session_state["job_title"] = job_title
+        st.session_state["found_cv"] = found_cv
+        st.session_state["missing_skills"] = missing_skills
+        st.session_state["chat_history"] = []
 
         for percent_complete in range(60, 100):
             time.sleep(0.01)
@@ -294,6 +347,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
         st.divider()
         st.header("📊 Detailed Skill Analysis")
 
+        # Percentages:
         def match_pct(cv_list, jd_list):
             if not jd_list:
                 return 100
@@ -310,7 +364,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             if pct >= 40: return "#c9723a"
             return "#c0392b"
 
-        #Donuts:
+        # Donuts SVG:
         def donut_html(pct, label, size=160):
             r = 54
             circ = 2 * 3.14159 * r
@@ -366,7 +420,7 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
         </div>
         """, unsafe_allow_html=True)
 
-        #Checklist:
+        # Checklist:
         st.divider()
         st.subheader("✅ Skills Checklist")
         check_col1, check_col2 = st.columns(2)
@@ -395,17 +449,14 @@ if st.button("🚀 Start Match Analysis", use_container_width=True):
             else:
                 st.markdown("""
                     <div style="background-color:#2e4d3d;color:white;padding:10px;border-radius:10px;text-align:center;font-weight:bold;">
-                    🌟 Analysis Complete! You have all the required skills.
+                    🌟 You have all the required skills!
                     </div>
                 """, unsafe_allow_html=True)
 
-        #AI Career Coach:
+        # AI Career Coach:
         st.divider()
         st.subheader("🤖 AI Career Coach")
         with st.spinner("Generating your personalized career advice..."):
-            missing_hard = [s for s in found_jd_hard if s not in found_cv_hard]
-            missing_soft = [s for s in found_jd_soft if s not in found_cv_soft]
-            missing_lang = [s for s in found_jd_lang if s not in found_cv_lang]
             coach_prompt = f"""Career coach. Skill gap analysis results:
 Match: {pct_total}% overall, {pct_hard}% hard skills, {pct_soft}% soft skills, {pct_lang}% languages.
 Strong skills: {found_cv_hard + found_cv_soft}
@@ -421,27 +472,142 @@ Reply in English to the candidate. Use emoji headers: 💪 Your Strengths / 🎯
                 )
                 coach_text = coach_response.text.replace(chr(10), '<br>')
             except Exception:
-                # Fallback rule-based coach if API quota is exceeded:
                 strengths = ", ".join((found_cv_hard + found_cv_soft)[:5]) or "your existing experience"
                 gaps = ", ".join((missing_hard + missing_soft)[:5]) or "the specific skills listed above"
                 coach_text = f"""
 💪 <strong>Your Strengths</strong><br>
-Your profile shows solid competencies in {strengths}. 
+Your profile shows solid competencies in {strengths}.
 With a {pct_total}% overall match, you have a good foundation for this role.<br><br>
 🎯 <strong>Priority Gaps to Close</strong><br>
-Focus on developing: {gaps}. 
+Focus on developing: {gaps}.
 These are the key areas where the job requirements go beyond your current profile.<br><br>
 📚 <strong>Recommended Next Steps</strong><br>
 1. Prioritize the missing hard skills through online courses or hands-on projects.<br>
 2. Highlight your existing strengths clearly in your CV and cover letter.<br>
-3. Consider reaching out to people in this role to better understand the day-to-day requirements.
+3. Consider reaching out to people in this role to better understand day-to-day requirements.
 """
-
         st.markdown(f"""
         <div class="ai-coach-box">
             {coach_text.strip()}
         </div>
         """, unsafe_allow_html=True)
 
+        # ── FEATURE 1: Course Recommender ──────────────────────────────────────
+        if missing_hard or missing_soft:
+            st.divider()
+            st.subheader("🎓 Recommended Courses to Close Your Gaps")
+            with st.spinner("Finding the best courses for your skill gaps..."):
+                course_prompt = f"""You are a learning advisor. A candidate is missing these skills for a job:
+Hard skills missing: {missing_hard[:6]}
+Soft skills missing: {missing_soft[:4]}
+Job title: {job_title or "the target role"}
+
+Return ONLY a JSON array with exactly {min(len(missing_hard[:6]) + len(missing_soft[:4]), 6)} objects. No extra text, no markdown.
+Each object must have these exact keys:
+- "skill": the skill name
+- "course": specific course title
+- "platform": one of Coursera, Udemy, LinkedIn Learning, YouTube, edX
+- "level": one of Beginner, Intermediate, Advanced
+- "duration": estimated duration (e.g. "6 hours", "4 weeks")
+- "url": a plausible URL to the course (e.g. https://www.coursera.org/learn/course-name)
+
+Prioritize the most impactful skills first. Make course titles realistic and specific."""
+
+                try:
+                    course_response = client.models.generate_content(
+                        model="gemini-2.0-flash-lite",
+                        contents=course_prompt
+                    )
+                    raw = course_response.text.strip()
+                    raw = re.sub(r"```json|```", "", raw).strip()
+                    courses = json.loads(raw)
+                except Exception:
+                    # Fallback static courses if API fails:
+                    courses = [
+                        {"skill": s, "course": f"Introduction to {s}", "platform": "Coursera",
+                         "level": "Beginner", "duration": "6 hours",
+                         "url": f"https://www.coursera.org/search?query={s.replace(' ', '+')}"}
+                        for s in (missing_hard + missing_soft)[:6]
+                    ]
+
+            # Render course cards in 2 columns:
+            platform_icons = {
+                "Coursera": "🎓", "Udemy": "🎯", "LinkedIn Learning": "💼",
+                "YouTube": "▶️", "edX": "📚"
+            }
+            level_colors = {
+                "Beginner": "#2e4d3d", "Intermediate": "#c9723a", "Advanced": "#c0392b"
+            }
+
+            cols = st.columns(2)
+            for i, course in enumerate(courses):
+                icon = platform_icons.get(course.get("platform", ""), "📖")
+                level = course.get("level", "Beginner")
+                lvl_color = level_colors.get(level, "#2e4d3d")
+                with cols[i % 2]:
+                    st.markdown(f"""
+                    <div class="course-card">
+                        <div style="margin-bottom:8px;">
+                            <span class="course-tag">❌ {course.get('skill','')}</span>
+                            <span class="course-tag" style="color:{lvl_color};">{level}</span>
+                            <span class="course-tag">⏱ {course.get('duration','')}</span>
+                        </div>
+                        <div style="font-weight:700;font-size:15px;color:#2d2d2d;margin-bottom:4px;">
+                            {icon} {course.get('course','')}
+                        </div>
+                        <div style="font-size:13px;color:#6d6d6d;margin-bottom:10px;">
+                            {course.get('platform','')}
+                        </div>
+                        <a href="{course.get('url','#')}" target="_blank"
+                           style="background:#2e4d3d;color:white;padding:6px 16px;border-radius:20px;
+                                  text-decoration:none;font-size:13px;font-weight:600;">
+                            View Course →
+                        </a>
+                    </div>
+                    """, unsafe_allow_html=True)
+
     else:
         st.error("Missing data: Please provide both your profile (PDF or Text) and the job description.")
+
+# ── FEATURE 2: Career Coach Chatbot ────────────────────────────────────────────
+if st.session_state.get("analysis_done"):
+    st.divider()
+    st.subheader("💬 Chat with your Career Coach")
+    st.caption("Ask anything about your results, how to improve, or how to prepare for interviews.")
+
+    # Display chat history:
+    for msg in st.session_state.get("chat_history", []):
+        css_class = "chat-user" if msg["role"] == "user" else "chat-bot"
+        st.markdown(f'<div class="{css_class}">{msg["content"]}</div>', unsafe_allow_html=True)
+
+    # Chat input:
+    user_input = st.chat_input("Ask your career coach...")
+    if user_input:
+        st.session_state["chat_history"].append({"role": "user", "content": user_input})
+
+        # Build system context + full conversation history for multi-call:
+        system_context = f"""You are a friendly, expert career coach. You have already analyzed this candidate's profile.
+CV summary: {st.session_state.get('cv_content','')[:300]}
+Target job: {st.session_state.get('job_title','')} — {st.session_state.get('job_desc','')[:300]}
+Skills they have: {st.session_state.get('found_cv',[])}
+Skills they are missing: {st.session_state.get('missing_skills',[])}
+Answer in English, be concise, encouraging and practical. Max 3 short paragraphs."""
+
+        # Build full conversation for Gemini multi-turn:
+        conversation = system_context + "\n\n"
+        for msg in st.session_state["chat_history"]:
+            role = "Candidate" if msg["role"] == "user" else "Coach"
+            conversation += f"{role}: {msg['content']}\n"
+        conversation += "Coach:"
+
+        try:
+            chat_response = client.models.generate_content(
+                model="gemini-2.0-flash-lite",
+                contents=conversation
+            )
+            bot_reply = chat_response.text.strip()
+        except Exception:
+            bot_reply = "I'm having trouble connecting right now. Please try again in a moment!"
+
+        st.session_state["chat_history"].append({"role": "assistant", "content": bot_reply})
+        st.rerun()
